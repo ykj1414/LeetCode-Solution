@@ -1,0 +1,22 @@
+int mirrorReflection(int p, int q) {
+   int dist = 0;
+    int d = 0;
+    int remain;
+    
+    while(1)
+    {
+        d++;
+        dist += q;
+        remain = dist%(2*p);
+        
+        if(remain == p)
+        {
+            if(d%2 == 1)
+                return 1;
+            else
+                return 2;
+        }
+        if(remain == 0)
+            return 0;
+    }
+}
