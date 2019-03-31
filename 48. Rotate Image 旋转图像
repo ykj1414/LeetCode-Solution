@@ -1,0 +1,9 @@
+class Solution(object):
+    def rotate(self, matrix):
+        n = len(matrix)
+        for i in range(n):
+            for k in xrange(0, n - 1 - i):
+                matrix[i][k], matrix[n - 1 - k][n - 1 - i] = matrix[n - 1 - k][n - 1 - i], matrix[i][k]
+        for j in range(n):
+            for k in range(n/2):
+                matrix[k][j], matrix[n - 1 - k][j] = matrix[n - 1 - k][j], matrix[k][j]
