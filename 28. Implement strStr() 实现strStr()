@@ -1,0 +1,31 @@
+int strStr(char* haystack, char* needle) {
+    int n=strlen(haystack),m=strlen(needle);  
+    if(m==0) return 0;
+    if(m>n) return -1;
+    int pi[strlen(haystack)];
+    prefixFunction(needle,pi,m);
+    int k=-1;
+    for(int i=0;i<n;i++){
+        while(k>=0 && needle[k+1]!=haystack[i])
+            k=pi[k];
+        if(needle[k+1]==haystack[i])
+            k++;
+        if(k+1==m){
+            return i-k;
+        }
+    }
+    return -1;
+}
+
+void prefixFunction(char* pat,int pi[],int m){
+    if(m<1) return;
+    pi[0]=-1;
+    int k=-1;
+    for(int i=1;i<m;i++){
+        if(k>=0 && pat[k+1]!=pat[i])
+            k=pi[k];
+        if(pat[k+1]==pat[i])
+            k++;
+        pi[i]=k;
+    }
+}
