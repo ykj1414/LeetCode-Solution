@@ -1,0 +1,11 @@
+bool containsNearbyAlmostDuplicate(int* nums, int numsSize, int k, int t) {
+    int i = 1;
+    while(i<=k){
+        for(int j = 0;j+i<numsSize;j++){
+            //printf("%d,%d\n",*(nums+j),*(nums+j+i));
+            if(llabs((long long)*(nums+j)-(long long)*(nums+j+i))<=t) return true;
+        }
+        i++;
+    }
+    return false;
+}
