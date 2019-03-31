@@ -1,0 +1,33 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* plusOne(int* digits, int digitsSize, int* returnSize) {
+    int *p = digits;
+    int length = digitsSize;
+    *returnSize = length;
+    int *result = (int*)malloc(sizeof(int)*(length+1));
+    int *count = (int*)malloc(sizeof(int));
+    *count = 1;
+    while(length>0){
+        result[length] = judgePlus(digits[length-1],count); 
+        --length;
+    }
+    if(*count==1){
+        ++*returnSize;
+        result[length] = 1;
+        return result;
+    }
+    else
+        return result+1;
+}
+
+int judgePlus(int digit,int *count){
+    if(digit==9&&*count==1)
+        return 0;
+    else{
+        digit = digit+*count;
+        *count = 0;
+        return digit;
+    }
+}
