@@ -1,0 +1,12 @@
+char* toLowerCase(char* str) {
+    char *p = str;
+    for(;*p;p++){
+        if(*p>96&&*p<123){
+            continue;
+        }
+        if(*p>64&&*p<91){
+            *p = (*p)+32;
+        }
+    }
+    return str;
+}
