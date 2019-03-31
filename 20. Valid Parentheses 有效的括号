@@ -1,0 +1,23 @@
+class Solution:
+    def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        stack = []
+        dic = {'(':')','{':'}','[':']'}
+        
+        for i in s:
+				# for each open bracket, append the corresponding close backet  into the stack
+            if(i in ['(','[','{']):
+                stack.append(dic.get(i,None))
+            else:
+						#if i is a close bracket, yet there is no any open bracket,return error
+                if(len(stack) == 0):
+                    return False
+                else:
+								#pop the latest bracket to check if it is closed correctly
+                    close = stack.pop()
+                    if (close != i):
+                        return False
+        return (len(stack) == 0)
