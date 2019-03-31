@@ -1,0 +1,9 @@
+int mySqrt(int x) {
+    double err = 1e-15;
+    double t = x;
+    if(t==0)
+        return 0;
+    while((t-x/t)>err*t)
+        t = (x/t+t)/2.0;
+    return t;
+}
