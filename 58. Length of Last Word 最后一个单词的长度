@@ -1,0 +1,12 @@
+int lengthOfLastWord(char* s) {
+    int endofword = 0;
+    char *p = s;
+    while (*p != '\0') {
+        p++; 
+    }
+    endofword = --p - s;
+    while (endofword >= 0 && s[endofword] == ' ') endofword--;
+    int start = endofword;
+    while (start >= 0 && s[start] != ' ') start--;
+    return endofword - start;
+}
