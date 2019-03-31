@@ -1,0 +1,17 @@
+int numJewelsInStones(char* J, char* S) {
+    char *pj = J;
+    int sum = 0;
+    for(;*pj;pj++){
+        char *ps = S;
+        for(;*ps;ps++){
+            if(*ps^(*pj))
+            {
+                sum = sum;
+            }
+            else{
+                ++sum;
+            }
+        }
+    }
+    return sum;
+}
