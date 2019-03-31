@@ -1,0 +1,34 @@
+int myAtoi(char* str) {
+    char a='\0';
+    int len = 0;
+    double sum = 0;
+    while(*(str+len)){
+        if(*(str+len)==32||*(str+len)==9)
+        {
+            ++len;
+        }
+        else if(*(str+len)==45||*(str+len)==43){
+            if(*(str+len-1)==32||!*(str+len-1)){
+                a = *(str+len);
+                ++len;
+                break;
+            }
+            else
+                return 0;
+            
+        }
+        else if(*(str+len)<=57 &&*(str+len)>=48)
+            break;
+        else if(*(str+len)>57||*(str+len)<48)
+            return 0;
+    }
+    while(*(str+len)&&*(str+len)>=48&&*(str+len)<=57){
+        if(*(str+len)<48||*(str+len)>57)
+            break;
+        sum=sum*10+(double)(*(str+len)-48);
+        if(sum>(1<<31)-1)
+            return a==45?(1<<31):(1<<31)-1;
+        ++len;
+    }
+    return a==45?0-sum:sum;
+}
