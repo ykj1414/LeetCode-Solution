@@ -1,0 +1,31 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+ 
+void generate(char** result, int* Size, int l, int r, char* tmp, int index) {
+    if(l==0 && r==0) {
+        tmp[index]=0;
+        result[*Size]=(char*)malloc(sizeof(char)*index);
+        strcpy(result[*Size],tmp);
+        (*Size)++;
+        return;
+    }
+    if (l>0) {
+        tmp[index]='(';
+        generate(result, Size, l-1, r, tmp, index+1);
+    }
+    if(r>0 && l<r) {
+        tmp[index]=')';
+        generate(result, Size, l, r-1, tmp, index+1);
+    }
+}
+char** generateParenthesis(int n, int* returnSize) {
+    char** result=(char**)malloc(sizeof(char)*1000000);
+    char* tmp=(char*)malloc(sizeof(char)*(n*2+1));  
+    int l=n,r=n; /* l和r分别表示左括号和右括号的剩余个数 */
+    
+    *returnSize=0;  
+    generate(result,returnSize,l,r,tmp,0);  
+    return result;  
+}
