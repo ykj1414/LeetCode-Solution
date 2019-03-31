@@ -1,0 +1,43 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+typedef struct pair {
+    int value;
+    int index;
+} Pair;
+
+int cmpfunc (const void * a, const void * b) {
+   return ( (*(Pair*)a).value - (*(Pair*)b).value );
+}
+
+int* twoSum(int* nums, int numsSize, int target) {
+    
+    int i, j;
+    int* res;
+    Pair* pairs;
+    
+    pairs = (Pair*)malloc(numsSize * sizeof(Pair));
+    
+    for(i = 0; i < numsSize; i++) {
+        pairs[i].value = nums[i];
+        pairs[i].index = i;
+    }
+    
+    qsort(pairs, numsSize, sizeof(Pair), cmpfunc);
+    
+    i = 0;
+    j = numsSize - 1;
+    
+    while((pairs[i].value + pairs[j].value) != target) {
+        if((pairs[i].value + pairs[j].value) > target)
+            j--;
+        else
+            i++;
+    }
+    
+    res = (int*)malloc(2 * sizeof(int));
+    res[0] = pairs[i].index;
+    res[1] = pairs[j].index;
+    
+    return res;
+}
