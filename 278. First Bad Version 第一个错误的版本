@@ -1,0 +1,30 @@
+// Forward declaration of isBadVersion API.
+bool isBadVersion(int version);
+
+int firstBadVersion(int n) {
+    unsigned long high = n;
+    unsigned long low = 1;
+    bool result = false;
+    unsigned long mid = 0;
+    
+    if (low == high) {
+        return low;
+    }
+
+    while (high != low+1) {
+        mid = (high+low)/2;
+        result = isBadVersion(mid);
+
+        if (result) {
+            high = mid;
+        } else {
+            low = mid;
+        }
+    }
+
+    if ((low == 1) && isBadVersion(low)) {
+        return 1;
+    }
+
+    return high;
+}
