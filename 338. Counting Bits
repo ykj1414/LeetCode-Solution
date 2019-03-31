@@ -1,0 +1,9 @@
+int* countBits(int num, int* returnSize) {
+    *returnSize = num+1;
+    int *pArray = (int*)malloc(sizeof(int)*(*returnSize));
+    *pArray = 0;
+    for(int j = 0;j<=num;j++){
+        *(pArray+j) = *(pArray+(j>>1))+(j&1);
+    }
+    return pArray;
+}
