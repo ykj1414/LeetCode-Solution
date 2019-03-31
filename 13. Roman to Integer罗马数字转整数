@@ -1,0 +1,40 @@
+int romanToInt(char* s) {
+    char *p = s;
+    int i = strlen(s);
+    int num[i];
+    for(int j = 0;j<i;j++){
+        switch(s[j]){
+            case 'I':
+                num[j] = 1;
+                break;
+            case 'V':
+                num[j] = 5;
+                break;
+            case 'X':
+                num[j] = 10;
+                break;
+            case 'L':
+                num[j] = 50;
+                break;
+            case 'C':
+                num[j] = 100;
+                break;
+            case 'D':
+                num[j] = 500;
+                break;
+            case 'M':
+                num[j] = 1000;
+                break;
+        }
+    }
+    int total = num[i-1];
+    for (int j = i-1;j>0;--j){
+        if(num[j-1]<num[j]){
+            total-=num[j-1];
+        }
+        else{
+            total+=num[j-1];
+        }
+    }
+    return total;
+}
