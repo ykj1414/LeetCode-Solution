@@ -1,0 +1,31 @@
+int divide(int dividend, int divisor) {
+    int INTMAX = 2147483647;
+    int INTMIN = -2147483648;
+    if(divisor == 0)
+    {
+        return INTMAX;
+    }
+    if(dividend == INTMIN && divisor == -1)
+    {
+        return INTMAX;
+    }
+    if(divisor == 1){
+        return dividend;
+    }
+    int i=0;
+    int result=0;
+    long long sign = ((dividend<0)^(divisor<0))==1?-1:1;
+    printf("%ld",sign);
+    long long a = llabs((long long)dividend);
+    long long b = llabs((long long)divisor);
+    while(b<=a){
+        long long t = b,p=1;
+        while(a>=(t<<1)){
+            t=t<<1;
+            p<<=1;
+        }
+        a-=t;
+        i+=p;
+    }
+    return sign==-1?-i:i;
+}
