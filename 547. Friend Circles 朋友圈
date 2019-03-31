@@ -1,0 +1,17 @@
+int findCircleNum(int** M, int MRowSize, int MColSize) {
+    int sum = MRowSize;
+    for(int i =0;i<MRowSize;i++){
+        for(int j = i+1;j<MColSize;j++){
+            if(M[i][j]==1){
+                for(int k = j+1;k<MColSize;k++){
+                    if(M[j][k]==0){
+                        M[j][k]+=M[i][k];
+                    }
+                }
+                --sum;
+                break;
+            }
+        }
+    }
+    return sum;
+}
