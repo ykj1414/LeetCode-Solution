@@ -1,0 +1,13 @@
+class Solution:
+    def numUniqueEmails(self, emails):
+        """
+        :type emails: List[str]
+        :rtype: int
+        """
+        dickey = {}
+        for i in emails:
+            key_origin = i[0:i.find('@')]
+            key_origin1 = key_origin.replace('.','')
+            key = key_origin1[0:key_origin1.find('+')]+i[i.find('@'):]
+            dickey[key] = 1
+        return len(dickey)
