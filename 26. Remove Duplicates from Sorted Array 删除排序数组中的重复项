@@ -1,0 +1,15 @@
+int removeDuplicates(int* nums, int numsSize) {
+    int count = 0;
+    int last = 220284;
+    for (int i = 0; i < numsSize; i++)
+    {
+        int curr = *(nums + i);
+        if (last != curr)
+        {
+            *(nums + count) = curr;
+            count++;
+            last = curr;
+        }
+    }
+    return count;
+}
