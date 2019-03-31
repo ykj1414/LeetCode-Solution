@@ -1,0 +1,87 @@
+char *validIpv4(char *IP){
+    if(*IP==48) return IP+1;
+    if(*IP=='\0'||*IP=='.') return IP-2;
+    int length = 3;
+    int sum = 0;
+    //printf("%c\n",*IP);
+    sum = sum*10+*IP-48;
+    while(--length&&*IP>=48&&*IP<=57){
+        *IP++;
+        sum = sum*10+*IP-48;
+        if(sum>255) return IP;
+        //printf("%c\n",*IP);
+    }
+    if(*IP=='.') length+=1;
+    //printf("%d,%c\n",length,*IP);
+    if(length==0&&*IP!='\0') return IP+1;
+    else return IP;
+}
+
+char *validIpv6(char *IP){
+    //if(*IP==48) return IP+1;
+    if(*IP==':'||*IP=='\0') return IP-2;
+    int length = 4;
+    while(--length){
+        //printf("%c\n",*IP);
+        if((*IP>=48&&*IP<=57)||(*IP>=65&&*IP<=70)||(*IP>=97&&*IP<=102)) *IP++;
+        else return IP;
+    }
+    //printf("%c\n",*IP);
+    if(*IP==':') length+=1;
+    if(length==0&&*IP!='\0') return IP+1;
+    else return IP;
+}
+char* validIPAddress(char* IP) {
+    char sign = '0';
+    char *p = IP;
+    int check = 0;
+    if(*IP==48||*IP=='.'||*IP==':'){
+        char *result = "Neither";
+        return result;
+    }
+    while(*p!='.'&&*p!=':'&&*p!='\0') *p++;
+    if(*p=='\0'){
+        char *result = "Neither";
+        return result;
+    }
+    if(*p=='.'){
+        sign = '.';
+        p = IP;
+        //printf("%c",*p);
+        p = validIpv4(p);
+        while(*p==sign&&check<=3){
+            check+=1;
+            p = validIpv4(p+1);
+            //printf("%c\n",*p);
+        }
+        if(*(p)=='\0'&&check==3){
+            char *result = "IPv4";
+            return result;
+        }
+        else{
+            char *result = "Neither";
+            return result;
+        }
+    }
+    if(*p==':'){
+        sign = ':';
+        p = IP;
+        //printf("%c",*p);
+        p = validIpv6(p);
+        while(*p==sign){
+            check+=1;
+            p = validIpv6(p+1);
+            //printf("%c\n",*p);
+        }
+        //printf("%d,%d\n",*p,check);
+        if(*(p)=='\0'&&check==7){
+            char *result = "IPv6";
+            return result;
+        }
+        else{
+            char *result = "Neither";
+            return result;
+        }
+    }
+    return "";
+}
