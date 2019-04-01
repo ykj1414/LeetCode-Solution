@@ -1,0 +1,33 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void findNode(struct TreeNode *root,int L,int R,int *sum){
+    if(root==NULL) return;
+    if(root->val>R) findNode(root->left,L,R,sum);
+    else if(root->val<L) findNode(root->right,L,R,sum);
+    else{
+        *sum+=root->val;
+        findNode(root->left,L,R,sum);
+        findNode(root->right,L,R,sum);
+    }   
+}
+
+int rangeSumBST(struct TreeNode* root, int L, int R) {
+    struct TreeNode *p = root;
+    int sum = 0;
+    if(p->val>R) findNode(p->left,L,R,&sum);
+    else if(p->val<L) findNode(p->right,L,R,&sum);
+    else{
+        sum+=p->val;
+        findNode(p->left,L,R,&sum);  
+        findNode(p->right,L,R,&sum);
+    }
+    return sum;
+}
+
