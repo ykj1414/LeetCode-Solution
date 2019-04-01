@@ -1,0 +1,32 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int findMaxIndex(int *nums,int start,int end){
+    int maxindex = start;
+    for(int i = start;i<end;i++){
+        maxindex = *(nums+maxindex)>*(nums+i)?maxindex:i;
+    }
+    return maxindex;
+}
+
+struct TreeNode* buildSubTree(int *nums,int start,int end){
+    struct TreeNode *root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    if(start>=end) return NULL;
+    int cur_index = findMaxIndex(nums,start,end);
+    root->val = *(nums+cur_index);
+    root->left = buildSubTree(nums,start,cur_index);
+    root->right = buildSubTree(nums,cur_index+1,end);
+    return root;
+}
+
+struct TreeNode* constructMaximumBinaryTree(int* nums, int numsSize) {
+    //return NULL;
+    int cur_index = findMaxIndex(nums,0,numsSize);
+    struct TreeNode *root = buildSubTree(nums,0,numsSize);
+    return root;
+}
