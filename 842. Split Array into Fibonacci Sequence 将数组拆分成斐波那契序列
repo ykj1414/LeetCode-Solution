@@ -1,0 +1,81 @@
+INT_MAX = 2**31-1 
+class Solution(object):   
+    def isZeroStart(self,strnum):
+        return len(strnum)==len(str(int(strnum)))
+    
+    def isCalculable(self,result,num):
+        length = len(num)
+        global INT_MAX
+        if(len(result)>=3):
+            i = 2
+            if(len(str(result[1]))+
+                len(str(result[2]))+len(str(result[0]))==len(num)):
+                return True
+            curindex = len(str(result[0]))+len(str(result[1]))+len(str(result[2]))
+            while(curindex<length):
+                if(length-curindex<len(str(result[i]+result[i-1]))):
+                    # print(length-curindex-1,len(str(result[i]+result[i-1])))
+                    return False
+                a1 = num[curindex:curindex+len(str(result[i]+result[i-1]))]
+                # print(a1)
+                if (int(a1)>INT_MAX):
+                    print(a1)
+                    return False
+                if not (self.isZeroStart(a1)):
+                    return False
+                if(int(a1) == result[i]+result[i-1]):
+                    result.append(int(a1))
+                    i+=1
+                    curindex+=len(a1)  
+                else:
+                    return False
+            return True
+    def splitIntoFibonacci(self, num):
+        """
+        :type S: str
+        :rtype: List[int]
+        """
+        length = len(num)
+        result = []
+        if(length<=2):
+            return []
+        maxlen = int(length/2)
+        firstlen = 1
+        while(firstlen<=maxlen):
+            a1 = num[:firstlen]
+            nextlen = 1
+            if not(self.isZeroStart(a1)):
+                # print(self.isZeroStart(a1))
+                return []
+            while(nextlen<=maxlen):
+                a2 = num[firstlen:nextlen+firstlen]
+                if not(self.isZeroStart(a2)):
+                    break
+                if(firstlen+nextlen+len(str(int(a1)+int(a2)))>length):
+                    break
+                a3 =                num[nextlen+firstlen:firstlen+nextlen+len(str(int(a1)+int(a2)))]
+                # print(int(a1),int(a2),int(a3))
+                if not(self.isZeroStart(a3)):
+                    nextlen+=1
+                    continue
+                if(int(a1)+int(a2)==int(a3)):
+                    result.append(int(a1))
+                    result.append(int(a2))
+                    result.append(int(a3))
+                if(len(result)>=3):
+                    if(self.isCalculable(result,num)):
+                        return result
+                    else:
+                        result = []
+                        nextlen+=1
+                    continue
+                nextlen+=1
+            # if(len(result)>=3):
+            #     if(self.isCalculable(result,num)):
+            #         return True
+            #     else:
+            #         result = []
+            #         firstlen+=1
+            #     continue
+            firstlen+=1
+        return []
