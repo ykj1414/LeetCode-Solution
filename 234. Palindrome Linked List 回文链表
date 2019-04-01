@@ -1,0 +1,37 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* reverseList(struct ListNode*head){
+    struct ListNode *pre = NULL;
+    struct ListNode *nextnode = NULL;
+    struct ListNode *cur = head;
+    while(cur){
+        nextnode = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = nextnode;
+    }
+    return pre;
+}
+
+bool isPalindrome(struct ListNode* head) {
+    if(head==NULL) return true;
+    struct ListNode *s1 = head;
+    struct ListNode *s2 = head->next;
+    while(s2&&s2->next){
+        s1 = s1->next;
+        s2 = s2->next->next;
+    }
+    s2 = s1->next;
+    s2 = reverseList(s2);
+    while(s2){
+        if(head->val!=s2->val) return false;
+        s2 = s2->next;
+        head = head->next;
+    }
+    return true;
+}
