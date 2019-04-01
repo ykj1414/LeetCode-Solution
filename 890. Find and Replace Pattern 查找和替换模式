@@ -1,0 +1,51 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void judgePatternMode(char *pattern,char *s);
+
+char** findAndReplacePattern(char** words, int wordsSize, char* pattern, int* returnSize) {
+    *returnSize = 0;
+    int word_len = strlen(pattern);
+    char **result = (char**)malloc(sizeof(char*)*0);
+    char *s = (char*)malloc(sizeof(char)*(word_len+1));
+    judgePatternMode(pattern,s);
+    //printf("%s",s);
+    char *judge = (char*)malloc(sizeof(char)*(word_len+1));
+    for(int i = 0;i<wordsSize;i++){
+        //printf("%s\n",judge);
+        judgePatternMode(words[i],judge);
+        //printf("%s\n",judge);
+        char *p = s;
+        char *q = judge;
+        while(*p&&*q){
+            if(*p!=*q) break;
+            *p++;
+            *q++;
+        }
+        if(*q) continue;
+        else{
+            result = (char**)realloc(result,++*returnSize*sizeof(char*));
+            result[*returnSize-1] = words[i];
+        }       
+    }
+    free(s);
+    free(judge);
+    return result; 
+}
+
+void judgePatternMode(char *pattern,char *s){
+    char *p = pattern;
+    char *q = s;
+    int a[26] = {0};
+    int cur = 0;
+    while(*p){
+        if(a[*p-97]) *q++ = a[*p-97]+48;
+        else{
+            a[*p-97] = ++cur;
+            *q++= cur+48;
+        }
+        *p++;
+    }
+    *q='\0';
+}
