@@ -1,0 +1,57 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+bool judgePreNext(struct ListNode* cur,int pre){   
+    //printf("%d,%d\n",pre,cur->val);
+    if(cur->val==pre) return false;
+    if(cur->next==NULL) return true;
+    if(cur->val ==((struct ListNode*)cur->next)->val) return false;
+    return true;
+}
+
+struct ListNode* deleteDuplicates(struct ListNode* head) {
+    if(head==NULL || head->next ==NULL) return head;
+    struct ListNode fhead;
+    struct ListNode *p = &fhead;
+    struct ListNode *q = p;
+    p->next = head;
+    while(head){
+        //printf("%d\t%d\n",p->val,head->val);
+        if(head->next&&head->val==((struct ListNode*)head->next)->val){
+            while(head&&head->next&&head->val==((struct ListNode*)head->next)->val){
+                head = head->next;
+            }
+            int pre = head->val;
+            if(head->next==NULL){
+                if(judgePreNext(head,pre)){
+                    p->next = head;
+                }
+                head = head->next;
+                continue;
+            }
+            if(judgePreNext(head->next,pre)){
+                p->next = head->next;
+                head = head->next->next;
+                p = p->next;
+                //printf("%d,%d,%d\n",p->val,head->val,pre);
+                continue;
+            }
+            else {
+                head = head->next;
+                continue;
+            }
+        }
+        else{
+            p = p->next;
+        }
+        head = head->next;
+    }
+    if(p)p->next = NULL;
+    return q-p==0?NULL:q->next;
+}
+
