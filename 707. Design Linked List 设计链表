@@ -1,0 +1,117 @@
+typedef struct {
+    int val;
+    int length;
+    struct MyLinkedList *next;
+} MyLinkedList;
+
+
+/** Initialize your data structure here. */
+MyLinkedList* myLinkedListCreate() {
+    MyLinkedList *q = (MyLinkedList*)malloc(sizeof(MyLinkedList));
+    q->next = NULL;
+    q->val = -1;
+    q->length = 0;
+    return q;
+}
+
+/** Get the value of the index-th node in the linked list. If the index is invalid, return -1. */
+int myLinkedListGet(MyLinkedList* obj, int index) {
+    if(index<0||index>=obj->length) return -1;
+    MyLinkedList *p = obj->next;
+    int i = 0;
+    while(i++<index){
+        p = p->next;
+    }
+    return p->val;
+}
+
+/** Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list. */
+void myLinkedListAddAtHead(MyLinkedList* obj, int val) {
+    //int length = obj->length+1;
+    MyLinkedList *p = myLinkedListCreate();
+    p->val = val;
+    obj->length+=1;
+    p->next = obj->next;
+    obj->next = p;
+}
+
+/** Append a node of value val to the last element of the linked list. */
+void myLinkedListAddAtTail(MyLinkedList* obj, int val) {
+    MyLinkedList *q = obj->next;
+    MyLinkedList *p = myLinkedListCreate();
+    p->val = val;
+    while(q->next!=NULL) q=q->next;
+    q->next = p;
+    obj->length+=1;
+}
+
+/** Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted. */
+void myLinkedListAddAtIndex(MyLinkedList* obj, int index, int val) {
+    if(index<0||index>obj->length) return;
+    if(index==0) myLinkedListAddAtHead(obj,val);
+    else if(index==obj->length) myLinkedListAddAtTail(obj,val);
+    else{
+        MyLinkedList *p = obj->next;
+        MyLinkedList *q = myLinkedListCreate();
+        q->val = val;
+        int i = 0;
+        while(i++<index-1) p = p->next;
+        q->next = p->next;
+        p->next = q;
+        obj->length+=1;
+    }
+}
+
+/** Delete the index-th node in the linked list, if the index is valid. */
+void myLinkedListDeleteAtIndex(MyLinkedList* obj, int index) {
+    if(index<0||index>=obj->length) return;
+    else if(index==0){
+        int length = obj->length-1;
+        MyLinkedList *p = obj->next;
+        obj->next= p->next;
+        obj->length-=1;
+        free(p);
+        p = NULL;
+    }
+    else{
+        MyLinkedList *p = obj->next;
+        int i = 0;
+        while(i++<index-1) p = p->next;
+        MyLinkedList *q = p->next;
+        p->next = q->next;
+        free(q);
+        q = NULL;
+        obj->length-=1;
+    }
+}
+
+void myLinkedListFree(MyLinkedList* obj) {
+    if(obj->length==0){
+        free(obj);
+        obj = NULL;
+        return;
+    }
+    MyLinkedList *p = obj->next;
+    while(p!=NULL){
+        MyLinkedList *q = p;
+        p = p->next;
+        free(q);
+        q=NULL;
+    }
+    free(p);
+    p=NULL;
+    free(obj);
+    obj=NULL;
+    return;
+}
+
+/**
+ * Your MyLinkedList struct will be instantiated and called as such:
+ * struct MyLinkedList* obj = myLinkedListCreate();
+ * int param_1 = myLinkedListGet(obj, index);
+ * myLinkedListAddAtHead(obj, val);
+ * myLinkedListAddAtTail(obj, val);
+ * myLinkedListAddAtIndex(obj, index, val);
+ * myLinkedListDeleteAtIndex(obj, index);
+ * myLinkedListFree(obj);
+ */
