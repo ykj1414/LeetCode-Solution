@@ -1,0 +1,97 @@
+void sumCoefficient(int *result,int num,char opt){
+    switch(opt){
+        case '+':
+            *result = *result+num;
+            break;
+        case '-':
+            *result = *result-num;
+            break;
+    }
+}
+
+void solvePart(int *Coefficient,int *sum,char *start,char stop){
+    int cur_num = 0;
+    char opt = '+';
+    char *q = start;
+    while(*start!=stop){
+        if(*start==43) {
+            opt = '+';
+            *start++;
+            continue;
+        }
+        if(*start==45) {
+            opt = '-';
+            *start++;
+            continue;
+        }
+        cur_num = 0;
+        while(*start>=48 && *start<=57){
+            cur_num=cur_num*10+*start-48;
+            *start++;
+        }
+        //printf("%d\n",cur_num);
+        if(*start==120){
+            if(start!=q){
+                 if(*(start-1)==48&&cur_num==0){
+                    *start++;
+                    continue;
+                }
+            }
+            sumCoefficient(Coefficient,cur_num==0?1:cur_num,opt);
+            *start++;
+            continue;
+        } 
+        else{
+            sumCoefficient(sum,cur_num,opt);
+            continue;
+        } 
+    }
+}
+
+int getIntlen(int N){
+    if(N==0) return 1;
+    int length = 0;
+    while(N>0){
+        length++;
+        N/=10;
+    }
+    return length;
+}
+char* solveEquation(char* equation) {
+    int left_co = 0;
+    int right_co = 0;
+    int left_sum = 0;
+    int right_sum = 0;
+    char *p = equation;
+    solvePart(&left_co,&left_sum,p,'=');
+    while(*p++!=61);
+    //printf("%d,%d\n",left_co,left_sum);
+    solvePart(&right_co,&right_sum,p,'\0');
+    //printf("%d,%d",right_co,right_sum);
+    if(right_co==left_co&&left_sum==right_sum){
+        char *answer = "Infinite solutions";
+        //printf("%s",answer);
+        return answer;
+    }
+    if(right_co==left_co&&left_sum!=right_sum){
+        char *answer = "No solution";
+        //printf("%s",answer);
+        return answer;
+    }
+    int answer = (left_sum-right_sum)/(right_co-left_co);
+    //printf("%d",answer);
+    int length = getIntlen(abs(answer));
+    int r_len = answer>=0?2+length:3+length;
+    *equation = 'x';
+    *(equation+1) = '=';
+    if(answer<0) *(equation+2) = '-';
+    answer = abs(answer);
+    int i = 0;
+    //return equation;
+    while(length--&&++i){
+        *(equation+r_len-i) = (answer%10)+48;
+        answer/=10;
+    }
+    *(equation+r_len) = '\0';
+    return equation;
+}
