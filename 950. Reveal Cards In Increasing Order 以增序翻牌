@@ -1,0 +1,49 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int compareType(const void*a,const void*b){
+    return *(int*)a-*(int*)b;
+}
+
+int cardEnd(int n){
+    if(n%2==0) return n/2;
+    else return n/2+1;
+}
+void insertCards(int *cards,int l_len,int r_len){
+    int end = cardEnd(r_len);
+    int *left = (int*)malloc(sizeof(int)*end);
+    int *right = (int*)malloc(sizeof(int)*(r_len-end+1));
+    for(int i = 0;i<end;i++){
+        left[i]=cards[i];
+    }
+    for(int j = end;j<r_len;j++){
+        right[j-end+1]=cards[j];
+    }
+    if(l_len>r_len){
+        cards[-1] = r_len%2==0?right[r_len-end]:left[end-1];
+    }
+    if(r_len-end>1) insertCards(right+1,end,r_len-end);
+    for(int i =0;i<end;i++){
+        cards[2*i] = left[i];
+        if(2*i+1<r_len){
+            if(r_len-end==1||r_len-end>=end) cards[2*i+1] = right[i+1];
+            else cards[2*i+1] = right[i];
+        }
+    }
+    if(l_len>r_len){
+        cards[-1] = cards[r_len-1];
+    }
+    free(left);
+    free(right);
+}
+
+int* deckRevealedIncreasing(int* deck, int deckSize, int* returnSize) {
+    *returnSize = deckSize;
+    if(deckSize<=1) return deck;
+    qsort(deck,deckSize,sizeof(int),compareType);
+    if(deckSize==2) return deck;
+    insertCards(deck,0,deckSize);
+    return deck;
+}
+
