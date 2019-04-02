@@ -1,0 +1,66 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int findLargeIndex(int *preorder,int start,int end){
+    if(start>=end) return start-1;
+    for(int i = start+1;i<end;i++){
+        if(preorder[start]<preorder[i]) return i;
+    }
+    return start;
+}
+
+void buildSubTree(struct TreeNode *root,int *preorder,int start,int end){
+    int index = findLargeIndex(preorder,start,end);
+    //printf("%d,%d\n",index,preorder[index]);
+    if(index<=start){
+        printf("%d\n",root->val);
+        if(start<end-1){
+            struct TreeNode *l = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+            l->val = preorder[++start];
+            l->left = NULL;
+            l->right = NULL;
+            root->left = l;
+            buildSubTree(l,preorder,start,end);
+            return;
+        }
+        else return;
+    }
+    if(index==start+1){
+        struct TreeNode *r = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+        r->val = preorder[index];
+        r->left = NULL;
+        r->right = NULL;
+        root->right = r;
+        buildSubTree(r,preorder,index,end);
+        return;
+    }
+    else{
+        struct TreeNode *r = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+        struct TreeNode *l = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+        r->val = preorder[index];
+        r->left = NULL;
+        r->right = NULL;
+        root->right = r;
+        buildSubTree(r,preorder,index,end);
+        l->val = preorder[++start];
+        l->left = NULL;
+        l->right = NULL;
+        root->left = l;
+        buildSubTree(l,preorder,start,index);
+        return;
+    }
+}
+
+struct TreeNode* bstFromPreorder(int* preorder, int preorderSize) {
+    struct TreeNode *root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->val = *preorder;
+    root->left = root->right = NULL;
+    buildSubTree(root,preorder,0,preorderSize);
+    //printf("%d",root->val);
+    return root;
+}
