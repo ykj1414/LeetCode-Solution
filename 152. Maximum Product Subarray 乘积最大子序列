@@ -1,0 +1,17 @@
+int maxProduct(int* s, int ns) 
+{
+	int maxv = INT_MIN;
+	int headv = 1; //multiply elements from head to tail
+	int tailv = 1; //multiply elements from tail to head
+	int i, t;
+	for (i = 0; i < ns; ++i)
+	{
+		headv *= s[i];
+		tailv *= s[ns - 1 - i];
+		t = headv>tailv ? headv : tailv;
+		maxv = t > maxv ? t : maxv;
+		if (!headv) headv = 1; //if element == 0, array is divided, reset the product = 0.
+		if (!tailv) tailv = 1;
+	}
+	return maxv;
+}
