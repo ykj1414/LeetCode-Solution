@@ -1,0 +1,64 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+bool validLeftL(struct TreeNode *cur,struct TreeNode *pre,int min);
+bool validLeftR(struct TreeNode *cur,struct TreeNode *pre,int max);
+bool validRightL(struct TreeNode *cur,struct TreeNode *pre,int min);
+bool validRightR(struct TreeNode *cur,struct TreeNode *pre,int max);
+
+bool validLeftL(struct TreeNode *cur,struct TreeNode *pre,int min){
+    if(!cur) return true;
+    if(pre->val!=min){
+        if(cur->val<=min) return false;
+    }
+    if(cur->val<pre->val){
+        if(!validLeftL(cur->left,cur,cur->val)) return false;
+        return validLeftR(cur->right,cur,pre->val);
+    }
+    else return false;
+}
+
+bool validLeftR(struct TreeNode *cur,struct TreeNode *pre,int max){
+    if(!cur) return true;
+    else{
+        if(cur->val<max && cur->val>pre->val){
+            if(!validRightR(cur->right,cur,max)) return false;
+            return validRightL(cur->left,cur,pre->val);
+        }
+        else return false;
+    }
+}
+
+bool validRightL(struct TreeNode *cur,struct TreeNode *pre,int min){
+    if(!cur) return true;
+    else{
+        if(cur->val>min && cur->val<pre->val){
+            if(!validLeftL(cur->left,cur,min)) return false;
+            return validLeftR(cur->right,cur,pre->val);
+        }
+        else return false;
+    }
+}
+
+bool validRightR(struct TreeNode *cur,struct TreeNode *pre,int max){
+    if(!cur) return true;
+    if(pre->val!=max){
+        if(cur->val>=max) return false;
+    }
+    if(cur->val>pre->val){
+        if(!validRightR(cur->right,cur,cur->val)) return false;
+        return validRightL(cur->left,cur,pre->val);
+    }
+    else return false;
+}
+
+bool isValidBST(struct TreeNode* root) {
+    if(!root) return true;
+    if(!validLeftL(root->left,root,root->val)) return false;
+    return validRightR(root->right,root,root->val);
+}
