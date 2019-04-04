@@ -1,0 +1,39 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode* judgeSubTree(struct TreeNode *cur,struct TreeNode *pre)
+{
+    if(cur==NULL) return NULL;
+    if(cur->left!=NULL && cur->right!=NULL)
+    {
+        cur->left = judgeSubTree(cur->left,cur);
+        cur->right = judgeSubTree(cur->right,cur);
+    }
+    else if(cur->left==NULL&&cur->right!=NULL){
+        cur->right = judgeSubTree(cur->right,cur);
+    }
+    else if(cur->left!=NULL &&cur->right==NULL){
+        cur->left = judgeSubTree(cur->left,cur);
+    }
+    else{
+        return cur->val==0?NULL:cur;
+    }
+    if(cur->left!=NULL || cur->right!=NULL) return cur;
+    else return cur->val==0?NULL:cur;
+}
+
+struct TreeNode* pruneTree(struct TreeNode* root) {
+    struct TreeNode fhead;
+    struct TreeNode *q = &fhead;
+    struct TreeNode *p = q;
+    q->left = root;
+    q->right = root;
+    q->left = judgeSubTree(q->left,q);
+    q->right = judgeSubTree(q->right,q);
+    return p->left;
+}
