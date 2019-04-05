@@ -1,0 +1,65 @@
+int compareType(const void *a,const void *b){
+    return *(int*)a-*(int*)b;
+}
+
+void nextPermutation(int* nums, int numsSize)
+{
+    int i, j, g = numsSize - 1;
+    int len = numsSize;
+
+    /* Maintain Sanity */
+    if (!nums || !numsSize)
+        return;
+
+    /* Array length has to be greater than one */
+    if (len <= 1)
+        return;
+
+    /* Seek the first offset where a number is preceded by a smaller
+    value */
+    for (i = len - 1; i >= 0; --i)
+    {
+        /* Break if the present offset value is smaller than the
+        largest one till now */
+        if (nums[i] < nums[g])
+            break;
+
+        /* If needed, update the largest value */
+        if (nums[g] < nums[i])
+            g = i;
+    }
+
+    /* If the array is sorted in decreasing order, then simply reverse */
+    if (i < 0){
+        for(int i =-1,j = numsSize;i++<--j;){
+            //printf("%d,%d\t%d,%d\n",i,j,nums[i],nums[j]);
+            int a = nums[i];
+            nums[i] = nums[j];
+            nums[j] = a;
+        }
+    }
+
+    /* Else we need to seek the pairs to swap */
+    else
+    {
+        /* Locate the smallest value within the range [i, len] which is
+        greater than the value at i */
+        for (j = i + 1; j < len; ++j)
+        {
+            /* If needed, update the offset */
+            if ((nums[j] > nums[i]) &&
+                ((nums[j] - nums[i]) < (nums[g] - nums[i])))
+                g = j;
+
+            /* If the difference is one, then break */
+            if (nums[g] - nums[i] == 1)
+                break;
+        }
+
+        /* Swap the values, and sort the rest of the array */
+        nums[i] = nums[i]^nums[g];
+        nums[g] = nums[g]^nums[i];
+        nums[i] = nums[i]^nums[g];
+        qsort(nums+i+1,numsSize-i-1,sizeof(int),compareType);
+    }
+}
