@@ -1,0 +1,27 @@
+bool findWay(char **board,int bRS,int bCS,char *p,int cx,int cy){
+    if(*p==0) return true;
+    if(cx<0||cx>=bRS||cy<0||cy>=bCS) return false;
+    char temp = board[cx][cy];
+    if(board[cx][cy]==*p){
+        board[cx][cy] = '\0';
+        if(findWay(board,bRS,bCS,p+1,cx+1,cy)) return true;
+        else if(findWay(board,bRS,bCS,p+1,cx-1,cy)) return true;
+        else if(findWay(board,bRS,bCS,p+1,cx,cy+1)) return true;
+        else if(findWay(board,bRS,bCS,p+1,cx,cy-1)) return true;
+        else{
+            board[cx][cy] = temp;
+            return false;
+        }
+    }
+    else return false;
+}
+
+bool exist(char** board, int bRS, int bCS, char* word) {
+    char *p = word;
+    for(int i = 0;i<bRS;i++){
+        for(int j = 0;j<bCS;j++){
+            if(findWay(board,bRS,bCS,p,i,j)) return true;
+        }
+    }
+    return false;
+}
