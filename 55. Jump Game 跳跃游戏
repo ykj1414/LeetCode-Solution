@@ -1,0 +1,18 @@
+bool canJump(int* nums, int size)
+{
+    if(size < 2) return true;
+    for(int cur=size-2; cur > -1; cur--)
+    {
+        if(nums[cur] == 0)
+        {
+            int len = 1;
+            while(len > nums[cur])
+            {
+                len++;
+                cur--;
+                if(cur < 0) return false;
+            }
+        }
+    }
+    return true;
+}
