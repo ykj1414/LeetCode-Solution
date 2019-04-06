@@ -1,0 +1,28 @@
+bool judgeMatrix(char** matrix,int length,int mRS,int mCS){
+    for(int i = 0;i<=mRS-length;i++){
+        int j = 0,m,n;
+        for(;j<=mCS-length;){
+            m = 0;
+            for(;m<length;m++){
+                n = 0;
+                for(;n<length;n++){
+                    if(n==length-1&&m==length-1&&matrix[i+m][j+n]==49) return true;
+                    if(length-1==n) break;
+                    if(matrix[i+m][j+n]!=49) break;             
+                }
+                if(matrix[i+m][j+n]!=49) break;     
+            }
+            j+=(n+1);
+        }
+    }
+    return false;
+}
+
+int maximalSquare(char** matrix, int mRS, int mCS) {
+    int length = mRS>mCS?mCS:mRS;
+    while(length){
+        if(judgeMatrix(matrix,length,mRS,mCS)) break;
+        --length;
+    }
+    return length*length;
+}
