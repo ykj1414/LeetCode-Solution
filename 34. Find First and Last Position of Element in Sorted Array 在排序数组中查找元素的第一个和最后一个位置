@@ -1,0 +1,41 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int findFirst(int*nums,int start,int end,int target){
+    if(start>end) return -1;
+    int mid = (start+end)/2;
+    if(nums[mid]==target&&nums[mid-1]<target) return mid;
+    else if(nums[mid]<target) return findFirst(nums,mid+1,end,target);
+    else return findFirst(nums,start,mid-1,target);
+}
+
+int findLast(int *nums,int start,int end,int target){
+    if(start>end) return -1;
+    int mid = (start+end)/2;
+    if(nums[mid]==target&&nums[mid+1]>target) return mid;
+    else if(nums[mid]<=target) return findLast(nums,mid+1,end,target);
+    else return findLast(nums,start,mid-1,target);
+}
+
+int* searchRange(int* nums, int numsSize, int target, int* returnSize) {
+    *returnSize = 2;
+    int *result = (int*)malloc(sizeof(int)*2);
+    if(numsSize<1||(nums[0]!=target&&numsSize<2)){
+        result[0] = -1;
+        result[1] = -1;
+        return result;
+    }
+    if(nums[0]==target) result[0] = 0;
+    else result[0] = findFirst(nums,1,numsSize-1,target);
+    if (result[0]==-1){
+        result[1] = -1;
+        return result;
+    }
+    result[1] = findLast(nums,result[0]+1,numsSize-2,target);
+    if(result[1]==-1) {
+        if(nums[numsSize-1]==target) result[1] = numsSize-1;
+        else result[1] = result[0];
+    }
+    return result;
+}
