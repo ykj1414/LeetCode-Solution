@@ -1,0 +1,49 @@
+/**
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ * };
+ */
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int compareType(const void*a,const void*b){
+    return (*(struct Interval*)a).start-(*(struct Interval*)b).start;
+}
+
+void mergeInterval(struct Interval *intervals,int ivS,struct Interval **p,int start,int cur,int *rS){
+//printf("%d,%d\t%d,%d\n",intervals[start].start,intervals[start].end,intervals[cur].start,intervals[cur].end);
+    if(start>=ivS) return;
+    if(cur>=ivS){
+        p[0] = (struct Interval*)realloc(p[0],++(*rS)*sizeof(struct Interval));
+        p[0][*rS-1] = intervals[start];
+        return;
+    }
+    if(intervals[start].end>=intervals[cur].end){
+        mergeInterval(intervals,ivS,p,start,cur+1,rS);
+    }
+    else if(intervals[start].end>=intervals[cur].start){
+        intervals[start].end = intervals[cur].end;
+        mergeInterval(intervals,ivS,p,start,cur+1,rS);
+    }
+    else{
+        p[0] = (struct Interval*)realloc(p[0],++(*rS)*sizeof(struct Interval));
+        p[0][*rS-1] = intervals[start];
+        mergeInterval(intervals,ivS,p,cur,cur+1,rS);
+    }
+}
+
+struct Interval* merge(struct Interval* intervals, int intervalsSize, int* returnSize) {
+    if(intervalsSize<=1){
+        *returnSize = intervalsSize;
+        return intervals;
+    }
+    struct Interval **result = (struct Interval**)malloc(sizeof(struct Interval*)*1);
+    result[0] = (struct Interval*)malloc(sizeof(struct Interval)*0);
+    *returnSize = 0;
+    qsort(intervals,intervalsSize,sizeof(struct Interval),compareType);
+    mergeInterval(intervals,intervalsSize,result,0,1,returnSize);
+    return result[0];
+}
