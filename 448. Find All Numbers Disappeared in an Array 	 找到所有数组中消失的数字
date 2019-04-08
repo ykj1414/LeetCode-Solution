@@ -1,0 +1,29 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findDisappearedNumbers(int* nums, int numsSize, int* returnSize) {
+    int *missed = malloc(sizeof(int) * 0);
+    int idx = 0;
+    for(int i=0; i<numsSize; ++i){
+        while(nums[i]!=i+1 && nums[nums[i]-1]!=nums[i]){
+            swap(nums, i, nums[i]-1);
+        }
+    }
+    *returnSize = numsSize;
+    return nums;
+    for(int i=0; i<numsSize; ++i){
+        if(nums[i] != i+1){
+            missed = (int*)realloc(missed,++idx*sizeof(int));
+            missed[idx-1] = i+1;
+        }            
+    }
+    *returnSize = idx;
+    return missed;
+}
+
+void swap(int *nums, int a, int b){
+    int tmp = nums[a];
+    nums[a] = nums[b];
+    nums[b] = tmp;
+}
