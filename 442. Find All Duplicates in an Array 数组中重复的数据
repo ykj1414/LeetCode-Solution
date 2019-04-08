@@ -1,0 +1,26 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findDuplicates(int* nums, int numsSize, int* returnSize) {
+    int* d;
+    int i,j;
+    int *arr;
+    int count=0;
+    
+    d=(int* )calloc(numsSize+1,sizeof(int));
+    arr=(int* )malloc(numsSize*sizeof(int));
+    
+   
+    for(i=0;i<numsSize;i++)
+    {
+        d[nums[i]]+=1;
+        if(d[nums[i]]>1)
+        {
+            arr[count++]=nums[i];
+        }
+    }
+    free(d);
+    *returnSize=count;
+    return (arr);
+}
