@@ -45,5 +45,7 @@ struct Interval* merge(struct Interval* intervals, int intervalsSize, int* retur
     *returnSize = 0;
     qsort(intervals,intervalsSize,sizeof(struct Interval),compareType);
     mergeInterval(intervals,intervalsSize,result,0,1,returnSize);
-    return result[0];
+    struct Interval *p = result[0];
+    free(result);
+    return p;
 }
