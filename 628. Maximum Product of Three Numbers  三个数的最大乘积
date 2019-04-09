@@ -22,3 +22,38 @@ int maximumProduct(int* nums, int numsSize) {
         return a>b?a:b;
     }
 }
+
+//12ms AC
+int maximumProduct(int* nums, int numsSize) {
+	int m1 = INT_MIN, m2 = INT_MIN, m3 = INT_MIN, n1 = INT_MAX, n2 = INT_MAX;
+	for (int i = 0; i < numsSize; i++)
+	{
+		if (m3 < nums[i])
+		{
+			m1 = m2;
+			m2 = m3;
+			m3 = nums[i];
+		}
+		else if (m2 < nums[i])
+		{
+			m1 = m2;
+			m2 = nums[i];
+		}
+		else if (m1 < nums[i])
+		{
+			m1 = nums[i];
+		}
+		if (n1 > nums[i])
+		{
+			n2 = n1;
+			n1 = nums[i];
+		}
+		else if (n2 > nums[i])
+		{
+			n2 = nums[i];
+		}
+	}
+	int r1 = m1 * m2 * m3;
+	int r2 = n1 * n2 * m3;
+	return r1 > r2 ? r1 : r2;
+}
