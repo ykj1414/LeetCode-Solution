@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int findIndex(int p,int *is,int *ie){
+    int *index = is;
+    while(is<=ie){
+        if(*index==p) return (int)(index-is);
+        else *index++;
+    }
+    return -1;
+}
+
+struct TreeNode* judgeNode(int *ps,int *pe,int *is,int *ie){
+    //printf("%d,%d,%d,%d\n",pe-ps,ie-is,*ps,*is);
+    struct TreeNode *root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->val = *ps;
+    if(is==ie&&ps==pe){
+        //printf("%d\n",*ps);
+        root->left = NULL;
+        root->right = NULL;
+        return root;
+    }
+    int i_index = findIndex(*ps,is,ie-1);
+    //printf("i_index:%d\n",i_index);
+    int p_index = 0;
+    if(i_index<=0) root->left = NULL;
+    else{
+        p_index = i_index;
+        //printf("p_index:%d\n",p_index);
+        root->left = judgeNode(ps+1,ps+p_index,is,is+i_index-1);
+    }
+    if(ps+p_index+1>pe) root->right=NULL;
+    else root->right = judgeNode(ps+p_index+1,pe,is+i_index+1,ie);
+    return root;
+}
+
+struct TreeNode* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize) {
+    if(preorderSize<1)return NULL;
+    return judgeNode(preorder,preorder+preorderSize-1,inorder,inorder+inorderSize-1);
+}
