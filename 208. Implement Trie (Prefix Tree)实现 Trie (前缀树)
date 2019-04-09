@@ -1,0 +1,138 @@
+typedef struct PrefixTree{
+    bool isTrie;
+    char val;
+    int num;
+    struct PrefixTree **next;
+} Trie;
+
+/** Initialize your data structure here. */
+Trie* trieCreate() {
+    Trie *root = (Trie*)malloc(sizeof(Trie));
+    root->isTrie = false;
+    root->val = 0;
+    root->num = 0;
+    root->next = (Trie**)malloc(sizeof(Trie*)*1);
+    *(root->next) = (Trie*)malloc(sizeof(Trie)*0);
+    //printf("%c\n",root->val);
+    return root;
+}
+
+/** Inserts a word into the trie. */
+void trieInsert(Trie* obj, char* word) {
+    //printf("%s\n",word);
+    if(*word==0){
+        //printf("%d,%c,%c\n",obj->isTrie,obj->val,word[-1]);
+        obj->isTrie = true;
+        //printf("%d,%c,%c\n",obj->isTrie,obj->val,word[-1]);
+        return;
+    }
+    if(obj->val==0||obj->val==*(word-1)){
+        if(obj->num==0){
+            obj->num++;
+            *(obj->next) = (Trie*)realloc(*obj->next,sizeof(Trie)*obj->num);
+            *(obj->next) = trieCreate();
+            (*(obj->next))->val = *word;
+            //printf("%c\n",(*(obj->next))->val);
+            trieInsert(*(obj->next),word+1);
+        }
+        else{
+            int i = -1;
+            while(++i<obj->num){
+                //printf("%d,%c,%c\n",obj->isTrie,(*(obj->next)+i)->val,*word);
+                if((*(obj->next)+i)->val==*word){
+                    trieInsert(*(obj->next)+i,word+1);
+                    return;
+                }
+            }
+            if(i==obj->num){
+                obj->num++;
+                *obj->next = (Trie*)realloc(*obj->next,sizeof(Trie)*obj->num);
+                *((*obj->next)+i) = *trieCreate();
+                ((*obj->next)+i)->val = *word;
+                //printf("%s,%c\n",word,(*(obj->next)+i)->val);
+                trieInsert(*(obj->next)+i,word+1);
+            }
+        }
+    }
+}
+
+/** Returns if the word is in the trie. */
+bool trieSearch(Trie* obj, char* word) {
+    if(obj->val==0&&obj->num==0) return false;
+    else if(obj->val==0){
+        int i = -1;
+        while(++i<obj->num){
+            //printf("%c,%d,%s\n",obj->val,obj->num,word);
+            if(trieSearch(*(obj->next)+i,word)) return true;
+        }
+    }
+    else if(obj->num==0&&obj->val!=*word) return false;
+    else if(obj->num==0&&obj->val==*word){
+        if(*(word+1)==0) return obj->isTrie;
+        else return false;
+    }
+    else if(obj->val==*word&&*(word+1)==0) return obj->isTrie;
+    else if(obj->num>0&&obj->val==*word){
+        int i = -1;
+        while(++i<obj->num){
+            //printf("%c,%d,%s\n",obj->val,obj->num,word);
+            if(trieSearch(*(obj->next)+i,word+1)) return true;
+        }
+    }
+    return false;
+}
+
+/** Returns if there is any word in the trie that starts with the given prefix. */
+bool trieStartsWith(Trie* obj, char* prefix) {
+    //printf("%c,%s\n",obj->val,prefix);
+    if(obj->val==0){
+        if(obj->num==0) return false;
+        else{
+            int i = -1;
+            while(++i<obj->num){
+                if((*(obj->next)+i)->val==*prefix)
+                    return trieStartsWith(*(obj->next)+i,prefix+1);
+            }
+        }
+    }
+    else{
+        if(*prefix==0) return true;
+        else if(*prefix!=0 && obj->num==0) return false;
+        else{
+            int i = -1;
+            while(++i<obj->num){
+                //printf("%c,%c\n",(*(obj->next)+i)->val,*prefix);
+                if((*(obj->next)+i)->val==*prefix)
+                    return trieStartsWith(*(obj->next)+i,prefix+1);
+            }
+        }
+    }
+    return false;
+}
+
+void trieFree(Trie* obj) {
+    if(obj->num==0){
+        free(*(obj->next));
+        *(obj->next) = NULL;
+        free(obj->next);
+        obj->next = NULL;
+    }
+    else{
+        int i = -1;
+        while(++i<obj->num){
+            trieFree(*(obj->next)+i);
+        }
+        *obj->next = NULL;
+        free(obj->next);
+        obj->next = NULL;
+    }
+}
+
+/**
+ * Your Trie struct will be instantiated and called as such:
+ * struct Trie* obj = trieCreate();
+ * trieInsert(obj, word);
+ * bool param_2 = trieSearch(obj, word);
+ * bool param_3 = trieStartsWith(obj, prefix);
+ * trieFree(obj);
+ */
