@@ -17,5 +17,6 @@ int lengthOfLIS(int* nums, int numsSize) {
     for(int j = 0;j<numsSize;j++){
         max = max<dp[j]?dp[j]:max;
     }
+    free(dp);
     return max;
 }
