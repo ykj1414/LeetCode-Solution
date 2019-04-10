@@ -1,0 +1,105 @@
+//best AC 30ms
+bool binary_search0(int **matrix, int start, int matrixColSize, int target)
+{
+    int left = 0, right = matrixColSize - 1;
+    while(left <= right){
+        int mid = left + (right - left) / 2;
+        if(matrix[start][mid] < target)
+            left = mid + 1;
+        else if(matrix[start][mid] > target)
+            right = mid - 1;
+        else
+            return true;
+    }
+    return false;
+}
+
+bool binary_search1(int **matrix, int start, int matrixRowSize, int target)
+{
+    int left = 0, right = matrixRowSize - 1;
+    while(left <= right){
+        int mid = left + (right - left) / 2;
+        if(matrix[mid][start] < target)
+            left = mid + 1;
+        else if(matrix[mid][start] > target)
+            right = mid - 1;
+        else
+            return true;
+    }
+    return false;
+}
+
+/*bool searchMatrix(int** matrix, int matrixRowSize, int matrixColSize, int target) {
+    
+    for(int i = 0; i < matrixRowSize; i++){
+        if(binary_search0(matrix, i, matrixColSize, target))
+            return true;
+    }
+    
+    for(int i = 0; i < matrixColSize; i++){
+        if(binary_search1(matrix, i, matrixRowSize, target))
+            return true;
+    }
+    return false;
+}*/
+bool searchMatrix(int** matrix, int matrixRowSize, int matrixColSize, int target) {
+    int row = matrixRowSize - 1;
+    int col = 0;
+    
+    while(row >= 0 && col < matrixColSize){
+        if(matrix[row][col] > target)
+            row--;
+        else if(matrix[row][col] < target)
+            col++;
+        else
+            return true;
+    }
+    return false;
+}
+
+
+// 200ms AC
+bool binarySearch(int** matrix,int rs,int re,int cs,int ce,bool type,int target,int mCS){
+    //printf("%d,%d\t%d,%d\n",rs,re,cs,ce);
+    if((rs==re)&&(cs==ce))  return matrix[rs][cs]==target;
+        //printf("%d,%d\t%d,%d\n",rs,re,cs,ce);
+    if(type){
+        int mid = (rs+re)/2;
+        if(matrix[re][cs]<target) return binarySearch(matrix,re,re,cs,ce,0,target,mCS);
+        //printf("rowmid:%d\n",mid);
+        if(matrix[mid][cs]>target)
+            return binarySearch(matrix,rs,mid,cs,ce,1,target,mCS);
+        else if(matrix[mid][cs]==target)
+            return true;
+        else{
+            if(mid==rs){
+                if(matrix[re][cs]==target) return true;
+                else return binarySearch(matrix,rs,mid,cs,mCS,0,target,mCS);
+            }
+            return binarySearch(matrix,mid,re,cs,ce,1,target,mCS);
+        }
+    }
+    else {
+        int mid = (cs+ce)/2;
+        //printf("colmid:%d\n",mid);
+        if(matrix[rs][mid]>target){
+            if(mid-cs==1) return binarySearch(matrix,0,re,cs+1,mid,1,target,mCS);
+            else return binarySearch(matrix,rs,re,cs,mid,0,target,mCS);
+        }
+        else if(matrix[rs][mid]==target)
+            return true;
+        else {
+            if(ce-mid==1){
+                if(matrix[rs][ce]==target) return true;
+                else return binarySearch(matrix,0,re,mid+1,ce,1,target,mCS);
+            }
+            return binarySearch(matrix,rs,re,mid,ce,0,target,mCS);
+        }
+    }
+}
+
+bool searchMatrix(int** matrix, int matrixRowSize, int matrixColSize, int target) {
+    if(matrixRowSize<1||matrixColSize<1) return false;
+    if(matrix[0][0]>target||matrix[matrixRowSize-1][matrixColSize-1]<target) return false;
+    return binarySearch(matrix,0,matrixRowSize-1,0,matrixColSize-1,1,target,matrixColSize-1);
+}
