@@ -1,0 +1,23 @@
+bool visit(char **grid, int numRows, int numColumns, int x, int y) 
+{
+    if ( x <0 || y < 0 || y>= numColumns || x >= numRows || grid[x][y] != '1')
+        return false;
+    
+    grid[x][y] = 'v'; //visited
+    
+    visit(grid, numRows, numColumns, x + 1, y);
+    visit(grid, numRows, numColumns, x - 1, y);
+    visit(grid, numRows, numColumns, x, y + 1);
+    visit(grid, numRows, numColumns, x, y -1);
+    
+    return true;
+}
+
+int numIslands(char **grid, int numRows, int numColumns) 
+{
+    int total = 0;
+    for (int x=0; x< numRows; x++){
+        for (int y=0; y< numColumns; y++)
+            total += visit(grid, numRows, numColumns, x, y) ? 1 : 0;
+    return total;
+}
