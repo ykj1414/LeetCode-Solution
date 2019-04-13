@@ -1,0 +1,10 @@
+int maxProfit(int* p, int pS){
+    int i, last, dlast, temp;
+	for(dlast=0, last=0, i=1; i<pS; i++)
+	{
+		temp  = last;
+		last  = last+ p[i]-p[i-1] > dlast ? last+ p[i]-p[i-1] : dlast ;
+		dlast = temp>dlast ? temp : dlast;
+	}
+	return dlast > last ? dlast : last;
+}
