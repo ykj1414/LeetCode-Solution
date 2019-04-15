@@ -1,0 +1,46 @@
+//自己的做法，暴力解，利用DFS遍历枚举出所有情况后做统计，花费时间很长需要760ms，但是也有优点，暴力递归对内存的占用较少
+void switchPlus(int *nums,int index,int nS,int S,int sum,int *res){
+    if(index==nS){
+        if(sum==S) (*res)+=1;
+        return;
+    }
+    switchPlus(nums,index+1,nS,S,sum+nums[index],res);
+    switchPlus(nums,index+1,nS,S,sum-nums[index],res);
+}
+
+int findTargetSumWays(int* nums, int numsSize, int S) {
+    int res = 0;
+    switchPlus(nums,1,numsSize,S,nums[0],&res);
+    switchPlus(nums,1,numsSize,S,-nums[0],&res);
+    return res;
+}
+
+
+//12ms AC 内存10mb
+int findTargetSumWays(int* nums, int numsSize, int S) {
+    int *pre, *now;
+    int i, t, k;
+    
+    pre = (int *)calloc(2001, sizeof(int));
+    now = (int *)calloc(2001, sizeof(int));
+    
+    pre[1000]=1;//相当于0，2001的意思是把-1000-1000搬到了0-2000，总共2001项
+    
+    for ( i=0 ; i<numsSize ; i++){
+        for ( t=0 ; t<2001 ; t++){
+            if (pre[t] !=0 ){
+                now[t+nums[i]] += pre[t];
+                now[t-nums[i]] += pre[t];
+            }
+        }
+        for ( t=0 ; t<2001 ; t++){
+                pre[t] = now[t];
+                now[t] = 0;
+            
+        }   
+    }
+    if ( S>1000 )
+        return 0;
+    else
+        return pre[S+1000];
+}
