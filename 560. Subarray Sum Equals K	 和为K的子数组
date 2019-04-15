@@ -1,0 +1,73 @@
+#define Size 10000
+
+struct HashArray{
+    int key;
+    int total;
+    struct HashArray *next;
+}Hash[Size];
+
+
+void addHash(int num){
+    int temp = abs(num%Size);
+    if(Hash[temp].key==0){
+        Hash[temp].key=num;
+        Hash[temp].total++;
+    }
+    else if(Hash[temp].key==num) Hash[temp].total++;
+    else
+    {
+        struct HashArray *p=&Hash[temp]; 
+        while(p->key!=num&&p->next!=NULL)    
+        {p=p->next;}
+        if(p->key==num)
+        {p->total++;}
+        else
+        {
+            p->next=(struct HashArray*)malloc(sizeof(struct HashArray));
+            p=p->next;
+            p->key=num;
+            p->total=1;
+            p->next=NULL;
+        }
+    }   
+}
+
+int contain(int num){
+    int temp = abs(num%Size);
+    if(Hash[temp].total==0)
+    {
+        return 0;
+    }else if(Hash[temp].key==num)
+    {
+        return Hash[temp].total;     
+    }else
+    {
+        struct HashArray *p=&Hash[temp]; 
+        while(p->key!=num&&p->next!=NULL)    
+        {p=p->next;}
+        if(p->key==num)
+        {return p->total;}
+        else
+        {
+            return 0;
+        }
+    }
+    return 0;
+}
+
+int subarraySum(int* nums, int numsSize, int k) {
+    for(int i = 0;i<Size;i++){
+        Hash[i].key = 0;
+        Hash[i].total = 0;
+        Hash[i].next = NULL;
+    }
+    Hash[0].total = 1;
+    int sum = 0;
+    int result = 0;
+    for(int i = 0;i<numsSize;i++){
+        sum+=nums[i];
+        result+=contain(sum-k);
+        addHash(sum);
+    }
+    return result;
+}
