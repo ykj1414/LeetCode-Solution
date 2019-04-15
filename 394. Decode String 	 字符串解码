@@ -1,0 +1,55 @@
+void duplicateStr(char *s,int length,int num){
+    for(int i = 0;i<num;i++) *(s+i) = *(s+i-length);
+}
+
+
+char* decodeString(char* s) {
+    char *res = (char*)malloc(sizeof(char)*10000);
+    int r[50] = {0};
+    int pos = 0;
+    char *p = s;
+    char *q = res;
+    while(*p++);
+    p-=2;
+    while(p>=s){
+        if(p==s){
+            *q++=*p;
+            break;
+        }
+        else if(*p==']'){
+            r[pos++] = q-res;
+            p--;
+            continue;
+        }
+        else if(*p=='['){
+            p--;
+            int i =0;
+            int sum = 0;
+            while(*p>=48&&*p<=57){
+                sum+= pow(10,i++)*(*p-48);
+                if(p>s) p--;
+                else break;
+            }
+            printf("%d\n",sum);
+            int length = q-res-r[--pos];
+            int total = (sum-1)*length;
+            duplicateStr(q,length,total);
+            q+=total;
+            if(p==s) break;
+        }
+        else{
+            *q++=*p--;
+        }
+    }
+    *q = '\0';
+    char *r1 = res;
+    q--;
+    while(r1<q){
+        char c = *r1;
+        *r1 = *q;
+        *q = c;
+        r1++;
+        q--;
+    }
+    return res;
+}
