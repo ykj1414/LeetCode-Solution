@@ -1,0 +1,57 @@
+//我的方法 使用数组存储前序遍历的值然后在赋值，可以通过但是不符合要求
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void transferTree(struct TreeNode*pre,struct TreeNode*cur,int *p,int *n){
+    int index = *n;
+    *(p+index) = cur->val;
+    (*n)++;
+    if(cur->left!=NULL) transferTree(cur,cur->left,p,n);
+    if(cur->right!=NULL)transferTree(cur,cur->right,p,n);
+}
+
+void flatten(struct TreeNode* root) {
+    if(!root) return;
+    int ll[10000] = {0};
+    int num = 0;
+    struct TreeNode fhead;
+    fhead.left = root;
+    fhead.right = NULL;
+    transferTree(&fhead,fhead.left,ll,&num);
+    int *p = ll;
+    while(num--){
+        root->val = *p;
+        //printf("%d\t",root->val);
+        root->left = NULL;
+        if(num>0){
+            //printf("%d\n",*(p+1));
+            root->right = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+            root = root->right;
+        }
+        else break;
+       *p++;
+    }
+    root->right = NULL;
+}
+
+//最佳AC 4ms 深度遍历，每次将右子树加到左子树根节点的右子树上，再将左子树移到右子树，并置空左子树
+
+void flatten(struct TreeNode* root) {
+    struct TreeNode *cur = root;
+    while(cur){
+        if(cur->left){
+            struct TreeNode *p = cur->left;
+            while(p->right) p = p->right;
+            p->right = cur->right;
+            cur->right = cur->left;
+            cur->left = NULL;
+        }
+        cur = cur->right;
+    }
+}
