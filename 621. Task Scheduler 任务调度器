@@ -1,0 +1,16 @@
+int cmp(void* a, void* b){
+    return *(int*)a-*(int*)b;
+}
+int leastInterval(char* tasks, int tasksSize, int n) {
+    int* map=(int*)calloc(26,sizeof(int));
+    for(int i=0;i<tasksSize;i++){
+        map[tasks[i]-'A']++;
+    }
+    qsort(map,26,sizeof(map[0]),cmp);
+    int i=24;
+    while(i>=0&&map[i]==map[25]){
+        i--;
+    }
+    int ret=(map[25]-1)*(n+1)+25-i;
+    return tasksSize>ret?tasksSize:ret;
+}
