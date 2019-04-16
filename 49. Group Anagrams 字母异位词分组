@@ -1,0 +1,197 @@
+// time limited Error,自己写的算法，在最后一个例子有6W+的单词的时候报超出时间的错误。
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+bool judgeBytes(char *p,char *q){
+    int sum = 0;
+    bool *flag = (bool*)calloc(strlen(p),sizeof(bool));
+    for(int i = 0;i<strlen(p);i++){
+        for(int j = 0;j<strlen(q);j++){
+            if(flag[j]) continue;
+            else if(p[i]==q[j]){
+                sum++;
+                flag[j] = true;
+                break;
+            }
+        }
+    }
+    free(flag);
+    return sum==strlen(p);
+}
+
+char*** groupAnagrams(char** strs, int strsSize, int** columnSizes, int* returnSize) {
+    bool *visited = (bool*)calloc(strsSize,sizeof(bool));
+    int num = 1;
+    int row = 0;
+    *columnSizes = (int*)malloc(strsSize*sizeof(int));
+    char ***res = (char***)malloc(sizeof(char**)*strsSize);
+    for(int i = 0;i<strsSize;i++){
+        if(visited[i]) continue;
+        else {
+            //res = (char***)realloc(res,++row*sizeof(char**));
+            //*columnSizes = (int*)realloc(*columnSizes,row*sizeof(int));
+            res[row++] = (char**)malloc(sizeof(char*)*10);
+            res[row-1][0] = strs[i];
+            }
+        for(int j = i+1;j<strsSize;j++){
+            if(visited[j]||strlen(strs[j])!=strlen(strs[i])) continue;
+            else if(strlen(strs[j])==strlen(strs[i])){
+                if(judgeBytes(strs[j],strs[i])){
+                    visited[j] = true;
+                    res[row-1][num++] = strs[j];
+                    if(num%10==0) res[row-1] = (char**)realloc(res[row-1],(10+num)*sizeof(char*));
+                }
+            }
+        }
+        columnSizes[0][row-1] = num;
+        num = 1;
+    }
+    *returnSize = row;
+    return res;
+}
+
+// 72ms AC 非常厉害的解法
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+#define BUFSIZE 1000
+#define HASHSIZE 97
+struct entry {
+    struct entry *next;
+    char *key;
+    int value;
+};
+struct entry **hash_buckets;
+
+void int_to_ascii(int, char *, int*);
+void hashinit();
+int hashin(char*);
+void hash_insert(char*, int);
+void hash_build_groups(char **, char ***, int *, int *);
+
+
+char*** groupAnagrams(char** strs, int strsSize, int** columnSizes, int* returnSize) {
+    
+    char ***res= (char***)calloc(strsSize, sizeof (char**));
+    *columnSizes= (int*)calloc(strsSize, sizeof(int));
+    *returnSize=0;
+    
+    int i, j;
+    char *s;
+    int map[26]={0};
+    
+    char *buf = (char*)malloc(BUFSIZE);
+    int m = 0;
+    
+    hashinit();
+    
+    for (i=0; i < strsSize; i++) {
+        s=strs[i];
+        for (j=0; s[j]; j++) {
+            map[s[j]-'a']++;
+        }     
+        for (j=0, m =0; j< 26; j++) {
+            buf[m++]=j+'a';
+            int_to_ascii(map[j], buf, &m); 
+            buf[m++]='@';
+  
+            map[j]=0;
+        }
+        buf[m]='\0';
+        hash_insert(buf, i);           
+    }
+    
+    hash_build_groups(strs, res, returnSize, *columnSizes);
+    return res;
+}
+
+void int_to_ascii(int n, char *sbuf, int* p) {
+    
+    int d = n/10;
+    int r = n%10;
+    
+    if (d) {
+        int_to_ascii(d, sbuf, p);
+    }
+    
+    sbuf[*p]=r+'0';
+    *p = *p +1;        
+}
+
+void hashinit() {
+    hash_buckets = (struct entry**)calloc(HASHSIZE, sizeof(struct entry *));
+}
+
+/*
+int hashin(char* key) {
+    unsigned long i, v=0, a=31415, b=27183;
+    for (i=0; key[i]; i++, a= (a*b) % (HASHSIZE-1) ) {
+        v = (a*v+ key[i])%HASHSIZE;
+    }
+    return v;
+}
+*/
+
+int hashin(char* key) {
+    unsigned long i, v=0, a=127;
+    for (i=0; key[i]; i++) {
+        v = (a*v+ key[i])%HASHSIZE;
+    }
+    return v;
+}
+    
+void hash_insert(char* key, int value) {
+    int v = hashin(key);
+    struct entry *t=(struct entry *)calloc(1, sizeof(struct entry));
+    int len = strlen(key);
+    char *sbuf = (char*)malloc(len+1);
+    strcpy(sbuf,key);
+    t->key=sbuf;
+    t->value=value;
+    t->next=hash_buckets[v];
+    hash_buckets[v]=t;
+}
+
+void hash_build_groups(char ** slist, char ***result, int *rsize, int *csize) {
+    int i, j;
+    struct entry *t, *u;
+    char *sbuf;
+    
+    for (i=0; i< HASHSIZE;) {
+        for (t = (struct entry *)(&hash_buckets[i]), j=0; t->next; t= u) {
+            u = t->next;
+            if (strcmp(u->key, hash_buckets[i]->key)) {
+                    continue;
+            }
+             else j++; 
+        }
+            
+        if (j==0) { i++; continue;}
+        result[*rsize]=(char **)malloc(j*sizeof(char*));
+        csize[*rsize]=j;
+        sbuf = hash_buckets[i]->key;
+        for (t = (struct entry *)(&hash_buckets[i]), j=0; t->next;) {
+            u = t->next;
+            if (strcmp(u->key, sbuf)) {
+                t = u;
+                continue;
+            }
+            
+            result[*rsize][j]=slist[u->value];
+            if (u->key != sbuf)
+                free(u->key);
+            t->next = u->next;
+            j++;
+        }
+        *rsize  = *rsize +1;
+        free(sbuf);
+        
+        if (hash_buckets[i] == NULL)
+            i++;
+    
+    }
+}
