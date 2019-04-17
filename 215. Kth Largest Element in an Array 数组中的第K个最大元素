@@ -1,0 +1,83 @@
+//我的暴力解法，为了防止负数越界，把所有下标搬移到50000左右两侧，这样的算法时间不慢但是极耗内存，跑下来内存花费9.5M左右。
+int findKthLargest(int* nums, int numsSize, int k) {
+    int *largeNum = (int*)calloc(100000,sizeof(int));
+    int index = numsSize-k;
+    for(int i = 0;i<numsSize;i++) largeNum[nums[i]+50000]++;
+    int sum = 0;
+    int i = 0;
+    while(sum<numsSize-k+1) sum+=largeNum[i++];
+    free(largeNum);
+    return i-1-50000;
+}
+
+
+//4msAC  内存在7.4M左右，使用的思想是堆排序
+int findKthLargest(int* nums, int numsSize, int k) {
+    int *temp;
+    temp = (int*) malloc((numsSize+1) * sizeof(int));
+    
+    for (int i=0; i<numsSize; i++)
+    {
+        temp[i+1] = nums[i];
+    }
+    buildMaxHeap(temp, numsSize);
+    int kthMax;
+    for (int i = 1; i<=k; i++)
+    {
+        kthMax = extractMax(temp, numsSize);
+        numsSize--;
+    }
+    return kthMax;
+}
+
+void buildMaxHeap(int* a , int heapSize)
+{
+    for (int i = heapSize/2; i>=1; i--)
+    {
+        maxHeapify(a, i, heapSize);
+    }
+}
+
+void maxHeapify(int* a, int index, int heapSize)
+{
+    if (heapSize < 1)
+    {
+        return;
+    }
+    
+    int left, right, max, temp;
+    
+    left = 2*index;
+    right = 2*index+1;
+    
+    if((left<=heapSize) && (a[left] > a[index]))
+    {
+        max = left;
+    }
+    else
+    {
+        max = index;
+    }
+    
+    if ((right<=heapSize) && (a[right] > a[max]))
+    {
+        max = right;
+    }
+    
+    if (max != index)
+    {
+        temp = a[index];
+        a[index] = a[max];
+        a[max] = temp;
+        maxHeapify(a, max, heapSize);
+    }
+}
+
+int extractMax(int* a, int heapSize)
+{
+    int max = a[1];
+    a[1] = a[heapSize];
+    heapSize--;
+    maxHeapify(a, 1, heapSize);
+    return max;
+}
