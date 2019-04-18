@@ -1,0 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+ 
+//12 ms AC
+struct TreeNode p[10000];
+
+void BFS(struct TreeNode *root,int **cSs,int *rS,int ***res,int cur,int total){
+    if(!root) return;
+    int pre = total;
+    int index = 0;    
+    p[0] = *root;
+    for(;;){
+        //printf("%d,%d,%d,%d\n",total,*rS,pre,p[cur].val);
+        (*res)[*rS-1][index++] = p[cur].val;
+        //printf("%d\n",p[cur].val);
+        if(p[cur].left!=NULL) p[total++] = *(p[cur].left);
+        if(p[cur].right!=NULL) p[total++] = *(p[cur].right);
+        if(++cur==pre){
+            if(cur==total) return;
+            *rS+=1;
+            *cSs = (int*)realloc(*cSs,sizeof(int)*(*rS));
+            (*cSs)[*rS-1] = total-pre;
+            *res = (int**)realloc(*res,*rS*sizeof(int**));
+            (*res)[*rS-1] = (int*)malloc(sizeof(int)*(total-pre));
+            index = 0;
+            pre = total;
+        }
+    }
+}
+
+int** levelOrder(struct TreeNode* root, int** columnSizes, int* returnSize) {
+    *columnSizes = (int*)calloc(1,sizeof(int));
+    if(!root) return NULL;
+    int **res = (int**)malloc(sizeof(int*));
+    *res = (int*)malloc(sizeof(int));
+    *returnSize = 1;
+    **columnSizes = 1;
+    BFS(root,columnSizes,returnSize,&res,0,1);
+    return res;
+}
