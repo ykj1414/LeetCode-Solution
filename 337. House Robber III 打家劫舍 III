@@ -1,0 +1,37 @@
+//16ms 最快AC版本，唯一的不足是递归导致的内存使用偏大
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#define MAX(a,b) a>b?a:b;
+
+typedef struct RobMoney{
+    int c_max;
+    int n_max;
+}rm;
+
+rm calRob(struct TreeNode*root){
+    rm p = {0,0};
+    if(!root) return p;
+    //这两句其实是在自顶向下遍历到结束，然后自底向上返回。而不是很多博客中直接照着函数名说的偷左侧和偷右侧;
+    rm p_l = calRob(root->left);    
+    rm p_r = calRob(root->right);
+    //下面两句判断非常关键，他保证了自底向上递归的时候，能留下最大的数值。
+    //p.c_max实际上相当于，以上一个父节点作为起点，直接从一重子节点开始走的时候的值，注意此时p的位置其实是在这个一重子节点这。
+    //p.n_max就很容易理解了，相当于二重三重子节点获得的最大值。
+    //p.c_max的值和p.n_max进行比较，留下最大的那个保证返回的永远是大值。
+    //以纯左子树4->1->2->3为例子，自底向上从3往回走，在3处，p_l和p_r值为{0,0},于是返回到2中的p_l值为{3,0},p_r为{0,0};
+    //那么在往上返回，显然返回到1节点中的p_l = {3,3},p_r = {0,0}也就是说 从2开始走 和从1开始走(此时没有算1的值),后续能找到的最大值都是3;
+    //继续往上返回，返回到根节点4中，p_l = {4,3},p_r = {0,0},接着 计算从4开始走和从4的子节点1开始走的值的大小比较，显然4+3>4,最后结果为7;
+    p.c_max = MAX(root->val+p_l.n_max+p_r.n_max,p_l.c_max+p_r.c_max);
+    p.n_max = p_l.c_max+p_r.c_max;
+    return p;
+}
+
+int rob(struct TreeNode* root) {
+    return calRob(root).c_max;
+}
