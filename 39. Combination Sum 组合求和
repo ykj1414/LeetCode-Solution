@@ -1,0 +1,69 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+void sort(int* nums, int begin, int end)
+{
+    int l=begin, r=end;
+    int v = nums[l+(r-l)/2];
+    while(l <= r)
+    {
+        while(nums[l] < v) l++;
+        while(nums[r] > v) r--;
+        if(l <= r)
+        {
+            int t = nums[l];
+            nums[l] = nums[r];
+            nums[r] = t;
+            l++;
+            r--;
+        }
+    }
+    if(begin < r)
+        sort(nums, begin, r);
+    if(l < end)
+        sort(nums, l, end);
+}
+
+void helper(int* nums, int size, int target, int* stack, int top, int*** arr, int** colSizes, int* returnSize)
+{
+    if(target == 0) //valid set, collect the stack;
+    {
+        *returnSize += 1;
+        *colSizes = (int*)realloc(*colSizes, sizeof(int)*(*returnSize));
+        (*colSizes)[*returnSize-1] = top;
+        *arr = (int**)realloc(*arr, sizeof(int*)*(*returnSize));
+        (*arr)[*returnSize-1] = (int*)malloc(sizeof(int)*(top+1));
+        for(int i = 1; i <= top; i++)
+            (*arr)[*returnSize-1][i-1] = stack[i];
+        return ;
+    }
+    for(int i = 0; i < size; i++)
+    {
+        if(nums[i] > target) break; //needless to check further;
+        if(nums[i]>=stack[top]) //ensure ascending order;
+        {
+            stack[top+1] = nums[i];
+            //可以在回溯时记录下当前的数组下标，每次遍历从传入的下标开始，这样无须进行大小比较,只需要稍微改动方法即可。
+            //helper(nums, size, target-nums[i], stack, top+1, arr, colSizes, returnSize,i);
+            helper(nums, size, target-nums[i], stack, top+1, arr, colSizes, returnSize);      
+        }
+    }
+}
+
+int cmp(const void*a,const void*b){
+    return *(int*)a-*(int*)b;
+}
+
+//AC - 4ms;
+int** combinationSum(int* nums, int size, int target, int** colSizes, int* returnSize)
+{
+    //sort(nums, 0, size-1);
+    qsort(nums,size,sizeof(nums[0]),cmp);
+    int** arr = (int**)malloc(sizeof(int*));
+    *returnSize = 0;
+    int* stack = (int*)malloc(sizeof(int)*(target/nums[0]+1));
+    helper(nums, size, target, stack, 0, &arr, colSizes, returnSize);
+    return arr;
+}
