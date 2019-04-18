@@ -12,7 +12,7 @@
  * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
  */
  
-//12 ms AC
+//12ms AC 16.6M内存
 struct TreeNode p[10000];
 
 void BFS(struct TreeNode *root,int **cSs,int *rS,int ***res,int cur,int total){
@@ -48,4 +48,108 @@ int** levelOrder(struct TreeNode* root, int** columnSizes, int* returnSize) {
     **columnSizes = 1;
     BFS(root,columnSizes,returnSize,&res,0,1);
     return res;
+}
+
+
+//8msAC 13m 内存，自己实现了队列的操作
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+struct QueueNode{
+    void* ptr;
+    struct QueueNode* next;
+};
+
+struct Queue{
+    struct QueueNode* head;
+    struct QueueNode* tail;
+};
+
+void push(struct Queue* q, void* val){
+    struct QueueNode* newnode = (struct QueueNode*)malloc(sizeof(struct QueueNode));
+    newnode->next = NULL;
+    newnode->ptr = val;
+    if(q->tail == NULL){
+        q->tail = newnode;
+    }else{
+        q->tail->next = newnode;
+    }
+    q->tail = newnode;  
+    if(q->head == NULL){
+        q->head = newnode;
+    }
+}
+
+void* pop(struct Queue* q){
+    void* ans;
+    if(q->head == NULL) {
+        ans = NULL;
+    }else{
+        ans = q->head->ptr;
+        struct QueueNode* tmp = q->head;
+        q->head = q->head->next;
+        if(q->head == NULL){
+            q->tail = NULL;
+        }
+        free(tmp);
+    }
+    
+    return ans;
+     
+}
+
+
+int** levelOrder(struct TreeNode* root, int** columnSizes, int* returnSize) {
+    if (root == NULL) return NULL;
+    int** array = (int**)malloc((sizeof(int*))*4096);
+    *columnSizes = (int*)malloc((sizeof(int))*4096);
+    
+    /*int** array = (int**)calloc(4096,sizeof(int*));
+    *columnSizes = (int*)calloc(4096,sizeof(int));
+    */
+    struct Queue q;
+    q.head = q.tail = NULL;
+    push(&q,root);
+    
+    /*array[0] = (int*)malloc(sizeof(int));*/
+    array[0] = (int *)calloc(1, sizeof(int));
+    *returnSize = 0;
+    int count = 0;
+    int curr = 1;
+    int next = 0;
+    while(q.head != NULL){
+        struct TreeNode *p = (struct TreeNode *)pop(&q);
+        if(p){
+            array[*returnSize][count] = p->val;
+            count++;  
+            if(p->left){
+                push(&q,p->left);
+                next++;
+            }
+            if(p->right){
+                push(&q,p->right);
+                next++;
+            }  
+        }       
+        if(count == curr){
+            (*columnSizes)[*returnSize] = curr;
+            (*returnSize)++;
+            /*array[*returnSize] = (int *)calloc(next, sizeof(int));*/
+            array[*returnSize] = (int*)malloc((sizeof(int))*next);
+            count = 0;
+            curr = next;
+            next = 0;         
+        }     
+    }
+    return array;
 }
