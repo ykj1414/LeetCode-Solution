@@ -1,0 +1,57 @@
+//12ms AC 16M
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+void calSub(int *nums,int nS,int **cSs,int *rS,int ***p,int index,int length,int pos){
+    if(length>nS) return;
+    for(int i = index;i<nS;i++){
+        *rS+=1;
+        *cSs = (int*)realloc(*cSs,*rS*sizeof(int));
+        (*cSs)[*rS-1] = length;
+        *p = (int**)realloc(*p,sizeof(int*)*(*rS));
+        //printf("%d,%d,%d,%d\n",*rS,pos,length,nums[i]);
+        (*p)[*rS-1] = (int*)calloc(length,sizeof(int));
+        ((*p)[*rS-1])[length-1] = nums[i];
+        //printf("%d,%d,%d,%d,%d\n",*rS,pos,length,nums[i],((*p)[1])[0]);
+        for(int j = 0;j<(*cSs)[pos];j++) ((*p)[*rS-1])[j] = ((*p)[pos])[j];
+        calSub(nums,nS,cSs,rS,p,i+1,length+1,*rS-1);
+    }
+}
+
+
+int** subsets(int* nums, int numsSize, int** columnSizes, int* returnSize) {
+    *returnSize = 1;
+    *columnSizes = (int*)malloc(sizeof(int));
+    **columnSizes = 0;
+    int **res = (int**)malloc(sizeof(int*)*(*returnSize));
+    *res = NULL;
+    if (numsSize==0) return res;
+    calSub(nums,numsSize,columnSizes,returnSize,&res,0,1,0);
+    return res;
+}
+
+//8msAC  7.5M
+int** subsets(int* nums, int numsSize, int** columnSizes, int* returnSize) {
+
+    *returnSize = 1<<numsSize;   /* same as pow(2,numsSize) */
+    int **result = (int **)malloc(sizeof(int *)* *returnSize);
+    *columnSizes = (int *)malloc(sizeof(int)* *returnSize);
+    
+    for( int i=0; i < *returnSize; i++ ){
+        result[i] = (int *)malloc(sizeof(int)* __builtin_popcount(i));
+        int columncnt=0;
+        
+        for( int idx=0; idx < numsSize; idx++ ){
+            if( (1<<idx) & i){
+                result[i][columncnt++] = nums[idx];
+            }
+        }
+        (*columnSizes)[i] = columncnt;   /* store row array count in column array */
+
+    }
+
+    return result;
+}
