@@ -1,0 +1,70 @@
+//我的解法 60ms 15.1M，利用位运算实现除法的功能。
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int divideFunc(int n,int m,int i){
+    int sign = (m^n)<0?-1:1;
+    int am = m<0?0-m:m;
+    int an = n<0?0-n:n;
+    if(an<am) return 0;
+    if(an==am) return sign;
+    int a = am;
+    while(a<an){
+        a<<=1;
+        i<<=1;
+    }
+    return sign*((i>>1)+divideFunc(an-(a>>1),am,1));
+}
+
+int* productExceptSelf(int* nums, int nS, int* rS) {
+    int *res = (int*)calloc(nS,sizeof(int));
+    *rS = nS;
+    int total = 1;
+    int n0 = 0;
+    int index = -1;
+    for(int i = 0;i<nS;i++){
+        if(nums[i]==0){
+            index = i;
+            n0++;
+            if(n0>1) return res;
+            continue;
+        }
+        total*=nums[i];
+    }
+    if(index>=0){
+        res[index] = total;
+        return res;
+    }
+    else
+        for(int i = 0;i<nS;i++) res[i] = divideFunc(total,nums[i],1);
+    return res;
+}
+
+//48 ms AC 核心思想是从两端同时遍历
+int* productExceptSelf(int* nums, int numsSize, int* returnSize) {
+   if(0==numsSize) return 0; 
+
+   int *ret=malloc(numsSize*sizeof(int));
+   *returnSize=numsSize;
+
+   int i=0;
+   while(i<numsSize){
+	   ret[i]=1;
+	   ++i;
+   }
+
+   i=1;
+   int right=1;
+   int left=1;
+   while(i<numsSize){
+	   left*=nums[i-1];
+	   ret[i]*=left;
+
+	   right*=nums[numsSize-i];
+	   ret[numsSize-i-1]*=right;
+	   ++i;
+   }
+
+   return ret;
+}
