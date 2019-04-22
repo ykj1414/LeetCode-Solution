@@ -1,0 +1,31 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int combination(int n){
+    if(n==0) return 1;
+    else return n*combination(n-1);
+}
+
+void calComb(int *nums,int nS,int **res,bool *p,int *rS,int c_len,int len){
+    for(int i = 0;i<nS;i++){
+        if(p[i]) continue;
+        p[i] = 1;
+        for(int j = 0;j<combination(nS-c_len);j++) res[*rS+j][c_len-1] = nums[i];
+        if(c_len<nS) calComb(nums,nS,res,p,rS,c_len+1,len);
+        //printf("%d,%d\n",*rS,nums[i]);
+        if(c_len==nS) *rS+=1;
+        p[i] = 0;
+    }
+}
+
+int** permute(int* nums, int nS, int* rS) {
+    if(nS<=0) return NULL;
+    int len = combination(nS);
+    int **res = (int**)calloc(len,sizeof(int*));
+    for(int i = 0;i<len;i++) res[i] = (int*)calloc(nS,sizeof(int));
+    *rS=0;
+    bool *judge = (bool*)calloc(nS,sizeof(bool));
+    calComb(nums,nS,res,judge,rS,1,len);
+    return res;
+}
