@@ -1,0 +1,65 @@
+//我的递归解法，4ms 7.7M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void recursiveTree(struct TreeNode* root,int **res,int *rS)
+{
+    if(*rS>80) *res = (int*)realloc(*res,sizeof(int)*(*rS+50));
+    if(root==NULL) return;
+    recursiveTree(root->left,res,rS);
+    *rS+=1;
+    (*res)[*rS-1] = root->val;
+    recursiveTree(root->right,res,rS);
+}
+
+int* inorderTraversal(struct TreeNode* root, int* rS) {
+    int *res = (int*)calloc(100,sizeof(int));
+    *rS = 0;
+    recursiveTree(root,&res,rS);
+    return res;
+}
+
+//符合题意的最佳AC，不使用递归实现，而是使用迭代实现的Morris Traversal
+int* inorderTraversal(struct TreeNode* root, int* returnSize) {
+	int buff[255];
+	*returnSize=0;
+	struct TreeNode *cur=root;
+	struct TreeNode *prev=NULL;
+	while(cur){
+		if(cur->left){
+			prev=cur->left;
+			while(prev->right && prev->right!=cur)
+				prev=prev->right;
+
+			if(prev->right){
+				// just come from precessor
+				prev->right=NULL;
+				buff[*returnSize]=cur->val;
+				++(*returnSize);
+				cur=cur->right;
+			}else{
+				prev->right=cur;
+				cur=cur->left;
+			}
+
+		}else{
+			buff[*returnSize]=cur->val;
+			++(*returnSize);
+			cur=cur->right;
+		}
+	}
+	int bs=sizeof(int)*(*returnSize);
+	int *res=malloc(bs);
+
+	memcpy(res,buff,bs);
+	return res;
+}
