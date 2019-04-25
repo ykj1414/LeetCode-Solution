@@ -1,0 +1,40 @@
+//20ms 6.9M 暴力解法，直接从当前下标开始往左右遍历，例如当前到第4个，就遍历35 2356 123567进行比较，或者45 相等 遍历36 2367
+int judgeSub(char *s,int left,int right){
+    int count = 0;
+    while(left>=0&&right<strlen(s)&&s[left]==s[right]){
+        left--;
+        right++;
+        count++;
+    }
+    return count;
+}
+
+int countSubstrings(char* s) {
+    int count = 0;
+    for(int i = 0;i<strlen(s);i++){
+        count+=1+judgeSub(s,i-1,i+1);
+        if(s[i]==s[i+1]) count+=1+judgeSub(s,i-1,i+2);
+    }
+    return count;
+}
+
+//思路是一致的，但是写法更好的最佳AC
+int countSubstrings(char* s) {
+    int len = strlen(s);
+    int i;
+    int count = 0;
+    for( i=0; i<len; i++){
+        /* Count # of odd length palindrome with middle = "s[i]" */
+        count += countPalin(s, i, i, len);
+        /* Count # of even length palindrome with middle = "s[i],s[i+1]" */
+        if(i!=len-1)
+            count += countPalin(s, i, i+1, len);
+    }
+    return count;
+}
+int countPalin(char *s, int head, int tail, int len){
+    int ret = (s[head]==s[tail])? 1:0 ;
+    if( ret && head-1>=0 && tail+1<len)
+        ret += countPalin(s, head-1, tail+1, len);
+    return ret;
+}
