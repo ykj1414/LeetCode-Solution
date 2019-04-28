@@ -1,0 +1,50 @@
+//608msAC 23.9M 暴力解法
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* dailyTemperatures(int* T, int TSize, int* returnSize) {
+    *returnSize = TSize;
+    int *res = (int*)calloc(TSize,sizeof(int));
+    for(int i = 0;i<TSize;i++){
+        if(i>0&&T[i]==T[i-1]){
+            res[i] = res[i-1]-1>0?res[i-1]-1:0;
+            continue;
+        }
+        for(int j = i+1;j<TSize;j++){
+            if(T[j]>T[i]){
+                res[i] = j-i;
+                break;
+            }
+        }
+    }
+    return res;
+}
+
+//148ms 23.9M AC
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* dailyTemperatures(int* T, int TSize, int* returnSize) {
+    if (T == NULL || TSize == 0) return NULL;    
+    int stackVal[TSize], stackDay[TSize];
+    int *arr = malloc(TSize * sizeof(int));
+    int top = -1;
+    stackVal[++top] = T[TSize-1];
+    stackDay[top] = 0;
+    for (int i = TSize-1; i >= 0; --i) {
+        int cur = T[i];
+        while (top != -1 && stackVal[top] <= cur) {
+            stackVal[top] = 0;
+            stackDay[top] = 0;
+            top--;
+        }
+        if (top == -1) arr[i] = 0;
+        else arr[i] = stackDay[top]-i;
+        stackVal[++top] = T[i];
+        stackDay[top] = i;
+    }
+    *returnSize = TSize;
+    return arr;
+}
