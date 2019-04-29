@@ -1,0 +1,23 @@
+//4ms AC 8.2M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+bool recurTree(struct TreeNode *left,struct TreeNode *right){
+    if(left==NULL&&right==NULL) return true;
+    else if(left==NULL) return false;
+    else if(right==NULL) return false;
+    else if(left->val!=right->val) return false;
+    else
+        return recurTree(left->left,right->right)&recurTree(left->right,right->left);
+}
+
+bool isSymmetric(struct TreeNode* root){
+    if(root==NULL) return true;
+    return recurTree(root->left,root->right);
+}
+
