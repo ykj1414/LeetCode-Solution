@@ -1,0 +1,39 @@
+//28ms AC
+int isSame(int *a,int *b)	//compare whether two int arrays are the same
+{
+	int i;
+	for(i=0;i<26;i++)
+		if(a[i] != b[i])
+			return 0;
+	return 1;
+}
+
+int* findAnagrams(char* s, char* p, int* returnSize)
+{
+	int s_len = strlen(s),p_len = strlen(p),i,j;
+    int *ans = (int*)calloc(s_len,sizeof(int));
+	(*returnSize) = 0;
+	if(p_len>s_len) return ans;
+	int p_alphabet[26]={0},s_alphabet[26]={0};
+	
+	for(i=0;i<p_len;i++)
+	{
+		p_alphabet[p[i]-'a']++;
+		s_alphabet[s[i]-'a']++;
+	}
+		
+		
+	for(i=0;i<=s_len-p_len;i++)
+	{
+		if(i!=0)	
+			s_alphabet[s[i+p_len-1]-'a']++;
+		
+		if(isSame(p_alphabet,s_alphabet))
+		{
+			ans[*returnSize] = i;
+			(*returnSize)++;
+		}
+		s_alphabet[s[i]-'a']--;
+	}
+	return ans;
+}
