@@ -1,0 +1,148 @@
+// 364msAC
+typedef struct MS{
+    int val;
+    struct MS *next;
+} MinStack;
+
+/** initialize your data structure here. */
+
+MinStack* minStackCreate() {
+    MinStack *head = (MinStack*)malloc(sizeof(MinStack));
+    head->val = 0;
+    head->next = NULL;
+    return head;
+}
+
+void minStackPush(MinStack* obj, int x){
+    MinStack *p = obj;
+    int cur = p->val;
+    int last = cur;
+    p->val = x;
+    while(p->next){
+        p = p->next;
+        cur = p->val;
+        p->val = last;
+        last = cur;
+    }
+    MinStack *end = minStackCreate();
+    end->val = last;
+    p->next = end;
+}
+
+void minStackPop(MinStack* obj) {
+    MinStack *p;
+    while(obj->next){
+        //printf("%d\n",obj->val);
+        obj->val = obj->next->val;
+        p = obj;
+        obj = obj->next;
+    }
+    p->next = NULL;
+    free(obj);
+}
+
+int minStackTop(MinStack* obj) {
+    return obj->val;
+}
+
+int minStackGetMin(MinStack* obj) {
+    int min = obj->val;
+    while(obj->next){
+        min = min<obj->val?min:obj->val;
+        //printf("%d\n",min);
+        obj = obj->next;
+    }
+    return min;
+}
+
+void minStackFree(MinStack* obj) {
+    MinStack *p = obj;
+    while(obj){
+        p = obj;
+        obj = obj->next;
+        free(p);
+    }
+}
+
+/**
+ * Your MinStack struct will be instantiated and called as such:
+ * MinStack* obj = minStackCreate();
+ * minStackPush(obj, x);
+ 
+ * minStackPop(obj);
+ 
+ * int param_3 = minStackTop(obj);
+ 
+ * int param_4 = minStackGetMin(obj);
+ 
+ * minStackFree(obj);
+*/
+// 28ms AC
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+typedef struct {
+    int minNum;
+    int size;
+    int *array;
+    int length;
+} MinStack;
+
+/** initialize your data structure here. */
+
+MinStack* minStackCreate() {
+    MinStack *stack = (MinStack *)malloc(sizeof(MinStack));
+    stack->minNum = INT32_MAX;
+    stack->size = 32;
+    stack->array = (int *)malloc(stack->size * sizeof(int));
+    stack->length = 0;
+    return stack;
+}
+
+void minStackPush(MinStack* stack, int x) {
+    if (stack->length >= stack->size) {
+        int oldSize = stack->size;
+        (stack->size) *= 2;
+        int *otherArray = (int *)malloc(stack->size * sizeof(int));
+        for (int i = 0; i < oldSize; i++) {
+            otherArray[i] = stack->array[i];
+        }
+        free(stack->array);
+        stack->array = otherArray;
+    }
+    if (stack->minNum != INT32_MAX) {
+        stack->minNum = min(stack->minNum, x);
+    }
+    stack->array[stack->length] = x;
+    stack->length += 1;
+}
+
+void minStackPop(MinStack* stack) {
+    if (stack->length == 0) {
+        return;
+    }
+    stack->length -= 1;
+    if (stack->array[stack->length] == stack->minNum) {
+        stack->minNum = INT32_MAX;
+    }
+}
+
+int minStackTop(MinStack* stack) {
+    if (stack->length > 0) {
+        return stack->array[stack->length - 1];
+    }
+    return INT32_MAX;
+}
+
+int minStackGetMin(MinStack* stack) {
+    if (stack->minNum == INT32_MAX) {
+        for (int i = 0; i < stack->length; i++) {
+            stack->minNum = min(stack->minNum, stack->array[i]) ;
+        }
+    }
+    return stack->minNum;
+}
+
+void minStackFree(MinStack* stack) {
+    free(stack->array);
+    free(stack);
+}
