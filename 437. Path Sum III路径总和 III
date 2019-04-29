@@ -1,0 +1,26 @@
+//20ms AC 9.6M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void recurTree(struct TreeNode *root,int sum,int total,int *num){
+    if(root==NULL) return;
+    total+=root->val;
+    if(total==sum) *num+=1;
+    recurTree(root->left,sum,total,num);
+    recurTree(root->right,sum,total,num);
+}
+
+int pathSum(struct TreeNode* root, int sum){
+    if(root==NULL) return 0;
+    int num = 0;
+    recurTree(root,sum,0,&num);
+    num+=pathSum(root->left,sum);
+    num+=pathSum(root->right,sum);
+    return num;
+}
+
