@@ -1,0 +1,12 @@
+#define Max(a,b) a>b?a:b
+
+int rob(int* nums, int numsSize){
+    int last[2] = {0};
+    for(int i = numsSize-1;i>=0;i--){
+        int p = last[1];
+        last[1] = Max(last[0],last[1]);
+        last[0] = Max(last[0],p+nums[i]);
+    }
+    return Max(last[1],last[0]);
+}
+
