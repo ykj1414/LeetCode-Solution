@@ -1,0 +1,56 @@
+//暴力解法 796ms 15.4M
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) {
+    struct ListNode *p = headA;
+    while(p){
+        struct ListNode *q = headB;
+        while(q){
+            if(q==p) return p;
+            q = q->next;
+        }
+        p = p->next;
+    }
+    return NULL;
+}
+//40msAC 遍历3次 先算出更长的链表，然后统一起点，再进行遍历找到一样的节点。
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) {
+    int skipA=0,skipB=0;
+    struct ListNode *pa=headA, *pb=headB;
+    while(pa){
+        skipA++;
+        pa=pa->next;
+    }
+    while(pb){
+        skipB++;
+        pb=pb->next;
+    }
+    pa=headA;
+    pb=headB;
+    if(skipA>skipB){
+        for(int i=0;i<skipA-skipB;i++) 
+            pa=pa->next;
+    }
+    else{
+        for(int i=0;i<skipB-skipA;i++) 
+            pb=pb->next;
+    }
+    while(pa!=pb && pa){
+        pa=pa->next;
+        pb=pb->next;
+    }
+    if(pa) return pa;
+    else return NULL;
+}
