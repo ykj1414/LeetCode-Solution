@@ -1,0 +1,18 @@
+// 8ms AC 异步遍历即可
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+bool hasCycle(struct ListNode *head) {
+    if(head==NULL) return false;
+    struct ListNode *p = head,*q = head->next;
+    while(p!=q&&p&&q){
+        p = p->next;
+        if(q->next) q = q->next->next;
+        else return false;
+    }
+    return (p==q)&&(p!=NULL);
+}
