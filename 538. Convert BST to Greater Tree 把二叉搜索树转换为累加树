@@ -1,0 +1,20 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int visitTree (struct TreeNode* root, int passValue)
+{
+    if(root == NULL) return passValue;
+    root -> val += visitTree(root -> right, passValue);
+    return visitTree(root -> left, root -> val);;   
+}
+
+struct TreeNode* convertBST(struct TreeNode* root) {
+    visitTree(root, 0);
+    return root;
+}
