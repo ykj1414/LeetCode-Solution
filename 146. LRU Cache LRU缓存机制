@@ -1,0 +1,207 @@
+//原始版本 单链表 时间超时
+typedef struct LRU{
+    struct LRU *next;
+    int key;
+    int value;
+} LRUCache;
+
+
+LRUCache* lRUCacheCreate(int capacity) {
+    if(capacity<=0) return NULL;
+    LRUCache *head = (LRUCache*)malloc(sizeof(LRUCache));
+    head->next = NULL;
+    head->value = -1;
+    head->key = -1;
+    LRUCache *cur = head;
+    while(capacity--){
+        LRUCache *p = (LRUCache*)malloc(sizeof(LRUCache));
+        p->next = NULL;
+        p->value = -1;
+        p->key = -1;
+        cur->next = p;
+        cur = cur->next;
+    }
+    return head;
+}
+
+int lRUCacheGet(LRUCache* obj, int key) {
+    int result = -1;
+    LRUCache *p;
+    while(obj->next&&obj->next->value>0){
+        //printf("curkey:%d,%d,%d\n",key,obj->next->key,obj->next->value);
+        if((obj->next)->key==key){
+            result = obj->next->value;
+            p = obj->next;
+            if(obj->next->next) {
+                if(obj->next->next->value>0) obj->next = obj->next->next;
+                else return result;
+            }
+            else return result;
+        }
+        obj = obj->next;
+    }
+    //printf("findkey:%d,%d,%d\n",key,result,obj->key);
+    if(result>0){
+        p->next = obj->next;
+        obj->next = p;
+    }
+    return result;
+}
+
+void lRUCachePut(LRUCache* obj, int key, int value) {
+    LRUCache *cur = obj;
+    while(cur->next){
+        //printf("curkey:%d,%d,%d\n",key,cur->key,cur->value);
+        if(cur->next->key==key){
+            cur->next->value = value;
+            lRUCacheGet(cur,key);
+            return;
+        }
+        if(cur->next->value<0){
+            cur->next->key = key;
+            cur->next->value = value;
+            return;
+        }
+        cur = cur->next;
+    }
+    LRUCache *tail = (LRUCache*)malloc(sizeof(LRUCache));
+    tail->next = NULL;
+    tail->key = key;
+    tail->value = value;
+    cur->next = tail;
+    cur = obj->next;
+    obj->next = obj->next->next;
+    free(cur);
+}
+
+void lRUCacheFree(LRUCache* obj) {
+    LRUCache *cur = obj;
+    while(obj){
+        cur = obj->next;
+        LRUCache *p = obj;
+        free(p);
+        obj = cur;
+    }
+}
+
+//标答版本，使用双链表和哈希表来做，加快查找遍历速度
+#define MAX_PAGES_NUMBER              1024
+#define MAX_ITEMS_NUMBER_IN_ONE_PAGE  1024
+
+typedef struct LRUCacheItem{
+    int value;
+    struct LRUCacheItem* prev;
+    struct LRUCacheItem* next;
+} LRUCacheItem;
+
+typedef struct {
+    LRUCacheItem** pages;
+} LRUCache;
+
+LRUCacheItem* front;
+LRUCacheItem* rear;
+int caps;
+int itemcount;
+
+LRUCache* lRUCacheCreate(int capacity) {
+    if (capacity <= 0 || capacity >= MAX_ITEMS_NUMBER_IN_ONE_PAGE*MAX_PAGES_NUMBER) return NULL;
+
+    LRUCache* lruCache = (LRUCache*)malloc(sizeof(LRUCache));
+    lruCache->pages = (LRUCacheItem**)malloc(sizeof(LRUCacheItem*) * MAX_PAGES_NUMBER);
+    for (int i=0; i<MAX_PAGES_NUMBER; i++) {
+        lruCache->pages[i] = NULL;
+    }
+    caps = capacity;
+    if (caps < 0) caps = 0;
+    itemcount = 0;
+    front = NULL;
+    rear = NULL;
+
+    return lruCache;
+}
+
+int lRUCacheGet(LRUCache* obj, int key) {
+    if (key >= MAX_PAGES_NUMBER*MAX_ITEMS_NUMBER_IN_ONE_PAGE) return -1;
+
+    int page_number = key / MAX_ITEMS_NUMBER_IN_ONE_PAGE;
+    int item_number = key % MAX_ITEMS_NUMBER_IN_ONE_PAGE;
+    if(obj->pages[page_number] == NULL) return -1;
+
+    LRUCacheItem* p = &(obj->pages[page_number][item_number]);
+    LRUCacheItem* q = p->next;
+    LRUCacheItem* r = p->prev;
+    if (p==NULL || p->value<=0) return -1;
+    if (p == front) return p->value;
+    if (p == rear) {
+        rear = rear->prev;
+        rear->next = NULL;
+    } else {
+        q->prev = r;
+        r->next = q;
+    }
+
+    p->next = front;
+    p->prev = NULL;
+    front->prev = p;
+    front = p;
+    return p->value;
+}
+
+void lRUCachePut(LRUCache* obj, int key, int value) {
+    if (key >= MAX_PAGES_NUMBER*MAX_ITEMS_NUMBER_IN_ONE_PAGE) return;
+
+    int page_number = key / MAX_ITEMS_NUMBER_IN_ONE_PAGE;
+    int item_number = key % MAX_ITEMS_NUMBER_IN_ONE_PAGE;
+    if (obj->pages[page_number] == NULL) {
+        obj->pages[page_number] = (LRUCacheItem*)malloc(sizeof(LRUCacheItem) * MAX_ITEMS_NUMBER_IN_ONE_PAGE);
+    }
+
+    if (rear == NULL) {
+        obj->pages[page_number][item_number].prev = NULL;
+        obj->pages[page_number][item_number].next = NULL;
+        rear = &(obj->pages[page_number][item_number]);
+        front = rear;
+        obj->pages[page_number][item_number].value = value;
+        itemcount++;
+        return;
+    }
+
+    if (obj->pages[page_number][item_number].value > 0) {
+        obj->pages[page_number][item_number].value = value;
+        lRUCacheGet(obj, key);
+    } else {
+        obj->pages[page_number][item_number].value = value;
+        obj->pages[page_number][item_number].prev = NULL;
+        obj->pages[page_number][item_number].next = front;
+        front->prev = &(obj->pages[page_number][item_number]);
+        front = front->prev;
+        itemcount++;
+    }
+
+    if (itemcount > caps) {
+        LRUCacheItem *p = rear->prev;
+        p->next = NULL;
+        rear->value = 0;
+        rear->prev = NULL;
+        rear->next = NULL;
+        rear = p;
+        itemcount--;
+    }
+
+    return;
+}
+
+void lRUCacheFree(LRUCache* obj) {
+    for (int i=0; i<MAX_PAGES_NUMBER; i++) {
+        LRUCacheItem* p = (LRUCacheItem*)(obj->pages[i]);
+        if (p != NULL) free(p);
+    }
+    free(obj->pages);
+    free(obj);
+    caps = 0;
+    itemcount = 0;
+    front = NULL;
+    rear = NULL;
+
+    return;
+}
