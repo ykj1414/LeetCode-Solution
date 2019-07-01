@@ -1,0 +1,50 @@
+//24ms 深度优先遍历，超过100%算法，但是由于一直递归耗费内存，可以使用宏定义dowhile的做法在外部调用函数，避免使用递归的做法
+void changeOToG(char **p,int x,int y,int rSize,int cSize){
+    if(x>=rSize-1||y>=cSize-1||x<=0||y<=0) return;
+    if(p[x][y]=='O'){
+        p[x][y]='G';
+        changeOToG(p,x,y+1,rSize,cSize);
+        changeOToG(p,x,y-1,rSize,cSize);
+        changeOToG(p,x+1,y,rSize,cSize);
+        changeOToG(p,x-1,y,rSize,cSize);
+    }
+}
+
+void solve(char** board, int boardSize, int* boardColSize){
+    int bS = boardSize;
+    if(bS<=2) return;
+    int cS = *boardColSize;
+    if(cS<=2) return;
+    for(int i = 0;i<cS;i++){
+        if(board[0][i]=='O'){
+            board[0][i]='G';
+            changeOToG(board,1,i,bS,cS);
+        }
+    }
+    for(int i =0;i<bS;i++){
+        if(board[i][0]=='O'){
+            board[i][0]='G';
+            changeOToG(board,i,1,bS,cS);
+        }
+    }
+    //printf("%c\n",board[3][5]);
+    for(int i =0;i<bS;i++){
+        if(board[i][cS-1]=='O'){
+            board[i][cS-1]='G';
+            changeOToG(board,i,cS-2,bS,cS);
+        }
+    }
+    //printf("%c\n",board[3][5]);
+    for(int i = 0;i<cS;i++){
+        if(board[bS-1][i]=='O'){
+            board[bS-1][i]='G';
+            changeOToG(board,bS-2,i,bS,cS);
+        }
+    }
+    for(int i = 0;i<bS;i++){
+        for(int j = 0;j<cS;j++){
+            if(board[i][j]=='G') board[i][j]='O';
+            else if(board[i][j]=='O') board[i][j]='X';
+        }
+    }
+}
