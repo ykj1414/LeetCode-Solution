@@ -1,0 +1,109 @@
+//4ms 7.1M内存 应该算是最优解了
+struct Mylist{
+    long long key;
+    int position;
+    struct Mylist*next;
+};
+void push(struct Mylist *node,long long key,int position){
+    struct Mylist *new = (struct Mylist*)malloc(sizeof(struct Mylist));
+    new->key = key;
+    new->position = position;
+    new->next = NULL;
+    node->next = new;
+}
+char* fractionToDecimal(int numerator,int denominator) {
+    bool sign = (numerator^denominator)<0?1:0;
+    long long nm = numerator;
+    nm = nm<0?-nm:nm;
+    long long dm = denominator;
+    dm = dm<0?-dm:dm;
+    struct Mylist *head = (struct Mylist*)malloc(sizeof(struct Mylist));
+    head->key = -1;
+    head->next = NULL;
+    long long  int_part = nm/dm;
+    //printf("%lld,%lld,%lf\n",nm,dm);
+    long long d_decimal_part = nm%dm;
+    int il = 0;
+    int d = 0;
+    long long d_int_part = int_part;
+    char *r = (char*)malloc(sizeof(char)*10001);
+    r[10000] = '\0';
+    r[0] = '-';
+    if(numerator==0){
+        r[0] = 48;
+        r[1] = '\0';
+        return r;
+    }
+    if(d_int_part==0) il = 1;
+    else{
+        while(d_int_part>0){
+            il++;
+            d_int_part/=10;
+        }
+    }
+    int i = il;
+    d_int_part = int_part;
+    while(i--){
+        if(d_int_part/10==0){
+            r[i+1]=d_int_part+48;
+            break;
+        }
+        r[i+1]=d_int_part-(d_int_part/10)*10+48;
+        d_int_part/=10;
+    }
+    if(d_decimal_part==0){
+        r[il+1] = '\0';
+        if(sign) return r;
+        else return r+1;
+    }
+    else{
+        r[il+1] = '.';
+        r[il+2] = '\0';
+        char *ip = r+il+1;
+        long long rest = d_decimal_part;
+        while(++d&&rest){
+            //printf("%d,%lld\n",d,rest*10);
+            rest*=10;
+            if(head->next==NULL){
+                push(head,rest,d);
+                r[il+d+1] = rest/dm+'0';
+                rest%=dm;
+                continue;
+            }
+            struct Mylist *cur = head;
+            while(cur->next){
+                if(cur->key == rest){
+                    ip[d+1] =')';
+                    ip[d+2] = '\0';
+                    while(d>cur->position){
+                        ip[d] = ip[d-1];
+                        d--;
+                    }
+                    ip[d] = '(';
+                    if(sign) return r;
+                    else return r+1;
+                }
+                cur = cur->next;
+            }
+            if(cur->key == rest){
+                ip[d+1] =')';
+                ip[d+2] = '\0';
+                while(d>cur->position){
+                    ip[d] = ip[d-1];
+                    d--;
+                }
+                ip[d] = '(';
+                if(sign) return r;
+                else return r+1;
+            }
+            else push(cur,rest,d);
+            //printf("%d\n",rest/dm);
+            r[il+d+1] = rest/dm+'0';
+            rest%=dm;
+        }
+    }
+    r[il+d+1] = '\0';
+    if(sign) return r;
+    else return r+1;
+}
+
