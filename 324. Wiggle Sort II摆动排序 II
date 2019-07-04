@@ -1,0 +1,33 @@
+//44ms 14.4M  速度快 但是需要额外的空间
+int compT(const void*a,const void*b){
+    return *(int*)a-*(int*)b;
+}
+void changeRepeat(int*nums,int numsSize){
+    int p = 0;
+    for(;p<numsSize-1;p++){
+        if(nums[p]==nums[p+1]){
+            int c1 = nums[p-1];
+            int c2 = nums[p];
+            nums[p-1] = nums[numsSize-2];
+            nums[p] = nums[numsSize-1];
+            nums[numsSize-2] = c1;
+            nums[numsSize-1] = c2;
+            changeRepeat(nums,numsSize-2);
+            break;
+        }
+    }
+}
+void wiggleSort(int* nums, int numsSize){
+    if(numsSize==1) return;
+    int *wnums = (int*)malloc(sizeof(int)*numsSize);
+    for(int i = 0;i<numsSize;i++) wnums[i] = nums[i];
+    qsort(wnums,numsSize,sizeof(nums[0]),compT);
+    int j = numsSize%2;
+    for(int i = 0;i<numsSize;i++){
+        if(i%2==1) nums[i] = wnums[numsSize/2+j+i/2];
+        else nums[i]=wnums[i/2];
+        //printf("%d\n",nums[i]);
+    }
+    if(j==0) changeRepeat(nums,numsSize);
+    free(wnums);
+}
