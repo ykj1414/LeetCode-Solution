@@ -1,0 +1,40 @@
+//0ms 7.1M内存解法
+
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void find(int *r,int i,int **m,int xlt,int ylt,int xrt,int yrt,int xld,int yld,int xrd,int yrd){
+    //printf("%d\t%d,%d,%d,%d,%d,%d,%d,%d\n",i,xlt,ylt,xrt,yrt,xld,yld,xrd,yrd);
+    if(ylt>yrt||xlt>xld||xrt>xrd||yld>yrd) return;
+    if(xlt==xrt&&xrt==xld&&xld==xrd&&ylt==yrt&&yrt==yld&&yld==yrd){
+        r[i] = m[xlt][ylt];
+        return;
+    }
+    else if(xlt==xrt&&xrt==xld&&xld==xrd){
+        for(int j = ylt;j<=yrt;j++) r[i++] = m[xlt][j];
+        return;
+    }
+    else if(ylt==yrt&&yrt==yld&&yld==yrd){
+        for(int j = xrt;j<=xrd;j++) r[i++] = m[j][yrt];
+        return;
+    }
+    for(int j = ylt;j<yrt;j++) r[i++] = m[xlt][j];
+    for(int j = xrt;j<xrd;j++) r[i++] = m[j][yrt];
+    for(int j = yrd;j>yld;j--) r[i++] = m[xrd][j];
+    for(int j = xld;j>xlt;j--) r[i++] = m[j][yld];
+    find(r,i,m,xlt+1,ylt+1,xrt+1,yrt-1,xld-1,yld+1,xrd-1,yrd-1);
+}
+int* spiralOrder(int** matrix, int matrixSize, int* matrixColSize, int* returnSize){
+    int m = matrixSize;
+    if(m==0) {
+        *returnSize = 0;
+        return NULL;
+    }
+    int n = *matrixColSize;
+    *returnSize = m*n;
+    int *result = (int*)malloc(sizeof(int)*m*n);
+    find(result,0,matrix,0,0,0,n-1,m-1,0,m-1,n-1);
+    return result;   
+}
