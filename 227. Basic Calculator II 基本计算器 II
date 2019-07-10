@@ -1,0 +1,34 @@
+//4ms 11.1MB 
+int calculate(char * s){
+    int result = 0;
+    int sign = 1;
+    if(*s=='-'){
+        sign = -1;
+        s++;
+    }
+    while(*s)
+    {
+        if(*s=='+') return result+calculate(s+1);//递归时不用传入符号，所以直接从s+1开始
+        else if(*s=='-') return result+calculate(s); //递归时传入符号，让第一个数变成负数
+        else if(*s=='*'){
+            int cur = 0;
+            s++;
+            while(*s==' ') s++;
+            while(*s>=48&&*s<=57) cur = cur*10+(*s++)-48;
+            result*=cur;
+        }
+        else if(*s=='/'){
+            int cur = 0;
+            s++;
+            while(*s==' ') s++;
+            while(*s>=48&&*s<=57) cur = (*s++)-48+cur*10;
+            result/=cur;
+        }
+        else if(*s==' ') s++;
+        else {
+            while(*s>=48&&*s<=57) result = (*s++)-48+result*10;
+            result*=sign;
+        }   
+    }
+    return result;
+}
