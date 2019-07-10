@@ -1,0 +1,37 @@
+//4ms 8.5M内存 方案
+#define MS 5000
+int strToInt(char *num){
+    int result = 0;
+    char *p = num;
+    if(*p=='-') p++;
+    while(*p){
+        result = 10*result+(*p++)-48;
+    }
+    if(*num=='-') return 0-result;
+    else return result;
+}
+int evalRPN(char ** tokens, int tokensSize){
+    if(tokensSize<=2) return strToInt(tokens[0]);
+    int nums[MS] = {0};
+    int j = 0;
+    for(int i = 0;i<tokensSize;i++){
+        if(tokens[i][0]=='-'&&tokens[i][1]=='\0'){
+            j-=2;
+            nums[j++] = nums[j]-nums[j+1];
+        }
+        else if(tokens[i][0]=='+'){
+            j-=2;
+            nums[j++] = nums[j]+nums[j+1];
+        }
+        else if(tokens[i][0]=='*'){
+            j-=2;
+            nums[j++] = nums[j]*nums[j+1];
+        }
+        else if(tokens[i][0]=='/'){
+            j-=2;
+            nums[j++] = nums[j]/nums[j+1];
+        }
+        else nums[j++] = strToInt(tokens[i]);
+    }
+    return nums[0];
+}
