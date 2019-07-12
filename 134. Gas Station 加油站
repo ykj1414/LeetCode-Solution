@@ -1,0 +1,40 @@
+//4ms 7.3M 
+#define Max_Size 10000
+int judgeCost(int cost,int gas){
+    return gas-cost;
+}
+int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize){
+    int gsum = 0;
+    int csum = 0;
+    int sp[Max_Size] = {-1};
+    int k = 0;
+    int fail = -1;
+    for(int i = 0;i<gasSize;i++){
+        gsum+=gas[i];
+        csum+=cost[i];
+        if(gas[i]>=cost[i]) sp[k++] = i;
+    }
+    if(gsum<csum) return -1;
+    int j = 0;
+    while(j<k){
+        //printf("%d,%d\n",sp[j],fail);
+        if(sp[j]<fail){
+            j++;
+            continue;
+        }
+        int curgas = gas[sp[j]];
+        for(int i = 1;i<gasSize;i++){
+            //printf("curgas:%d,gas:%d,cost:%d\n",curgas,gas[(sp[j]+i)%gasSize],cost[(sp[j]+i-1)%gasSize]);
+            if(judgeCost(cost[(sp[j]+i-1)%gasSize],curgas)<0){
+                fail = ((sp[j]+i-1)%gasSize);
+                curgas-=cost[(sp[j]+i-1)%gasSize];
+                j++;
+                break;
+            }
+            curgas+=gas[(sp[j]+i)%gasSize];
+            curgas-=cost[(sp[j]+i-1)%gasSize];
+        }
+        if(curgas>=0) return sp[j];
+    }
+    return -1;
+}
