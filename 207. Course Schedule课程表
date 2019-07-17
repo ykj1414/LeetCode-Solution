@@ -1,0 +1,176 @@
+//16ms 9.2M
+enum State
+{
+    WAIT,
+    PROCESSING,
+    FINISH
+};
+
+typedef struct _GNode
+{
+    int data;
+    struct _GNode *next;
+}GNode;
+
+typedef struct _Graph
+{
+    int v;
+    GNode **List;
+}Graph;
+
+typedef struct _SNode 
+{
+    int data;
+    struct _SNode *next;
+}SNode;
+
+typedef struct _Stack
+{
+    SNode *head;
+}Stack;
+
+bool isStackEmpty(Stack *s)
+{
+    if(s->head == NULL)
+        return true;
+    else
+        return false;
+}
+
+Stack *initStack()
+{
+    Stack *s = (Stack *)malloc(sizeof(Stack));
+    s->head = NULL;
+    return s;
+}
+
+void push(Stack *s, int data)
+{
+    SNode *node = (SNode *)malloc(sizeof(SNode));
+    node->data = data;
+    node->next = s->head;
+    s->head = node;
+}
+
+int pop(Stack *s)
+{
+    if(isStackEmpty(s))
+        return -1;
+    SNode *node = s->head;
+    int rval = node->data;
+    s->head = node->next;
+    free(node);
+    return rval;       
+}
+Graph *initGraph(int v)
+{
+    Graph *g = (Graph *)malloc(sizeof(Graph));
+    g->v = v;
+    g->List = (GNode **)malloc(sizeof(GNode *) * v);
+    for(int i = 0; i < v; i ++)
+        g->List[i] = NULL;
+    return g;
+}
+
+void addEdge(Graph *g, int src, int dest, bool directed)
+{
+    GNode *node = (GNode *)malloc(sizeof(GNode));
+    node->data = dest;
+    node->next = g->List[src];
+    g->List[src] = node;
+    
+    if(!directed)
+    {
+        GNode *node1 = (GNode *)malloc(sizeof(GNode));
+        node1->data = src;
+        node1->next = g->List[dest];
+        g->List[dest] = node1;
+    }
+}
+
+void buildAdjList(Graph *g,int** Arr, int edgesRowSize)
+{
+    for(int i = 0; i < edgesRowSize; i ++)
+    {
+        int dest = Arr[i][0];
+        int src = Arr[i][1];
+        addEdge(g, src, dest, true);
+    }
+}
+/*void printGraph(Graph *g)
+{
+    for(int i = 0; i < g->v; i++)
+    {
+        printf("[%d] ",i);
+        GNode *node = g->List[i];
+        while(node != NULL)
+        {
+            printf("%d ->", node->data);
+            node = node->next;
+        }
+        printf("NULL\n");
+    }
+}*/
+bool isGraphAcyclicUtil(Graph *g, int v, int state[], Stack *s)
+{
+    state[v] = PROCESSING;
+    GNode *node = g->List[v];
+    while(node != NULL)
+    {
+        if(state[node->data] == PROCESSING)
+            return false;
+        if(state[node->data] == WAIT && !isGraphAcyclicUtil(g, node->data, state, s))
+            return false;
+        node = node->next;
+    }
+    
+    push(s, v);
+    state[v] = FINISH;
+    return true;
+}
+bool isGraphAcyclic(Graph *g, Stack *s)
+{
+    if(g == NULL)
+        return true;
+    int state[g->v];
+    memset(state, WAIT, sizeof(state));
+    for(int i = 0; i < g->v; i ++)
+    {
+        if(state[i] == WAIT)
+            if(!isGraphAcyclicUtil(g, i, state, s))
+                return false;
+    }
+    return true;
+}
+
+// int* findOrder(int n, int** List, int rows, int *prerequisitesColSizes, int* returnSize) {
+//     Stack *s = initStack();
+//     if(List == NULL || n == 0)
+//         return NULL;
+//     Graph *g = initGraph(n);
+//     buildAdjList(g, List, rows);
+//     //printGraph(g);
+//     if(!isGraphAcyclic(g, s))
+//     {
+//         *returnSize = 0;
+//         return NULL;
+//     }
+//     else
+//     {
+//         *returnSize = n;
+//         int * Arr = (int *)malloc(sizeof(int)*n);
+//         for(int i = 0; !isStackEmpty(s); i++)
+// 	      Arr[i] = pop(s);
+		
+// 	return Arr;
+//     } 
+// }
+bool canFinish(int n, int** List, int rows, int prerequisitesColSize) {
+    Stack *s = initStack();
+    if(List == NULL || n == 0)
+        return false;
+    Graph *g = initGraph(n);
+    buildAdjList(g, List, rows);
+    if(!isGraphAcyclic(g, s)) return false;
+    else return true;
+}
