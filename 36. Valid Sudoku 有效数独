@@ -1,0 +1,19 @@
+//8ms最优解 总体思路很简单，利用哈希表存储出现过的数值即可，重要的是在一次遍历中完成3个条件的判断
+
+bool isValidSudoku(char** board, int boardSize, int* boardColSize){
+    bool col[81] = {0};
+    bool block[81] = {0};
+    for(int i = 0;i<boardSize;i++){
+        bool row[9] = {0};
+        for(int j = 0;j<*boardColSize;j++){
+            if(board[i][j]=='.') continue;
+            if(col[j*9+board[i][j]-49]) return false;
+            else col[j*9+board[i][j]-49] = 1;
+            if(row[board[i][j]-49]) return false;
+            else row[board[i][j]-49]=1;
+            if(block[(i/3*3+j/3)*9+board[i][j]-49]) return false;
+            else block[(i/3*3+j/3)*9+board[i][j]-49] =1;
+        }
+    }
+    return true;
+}
