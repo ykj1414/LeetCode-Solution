@@ -1,0 +1,12 @@
+//4ms 7M
+bool increasingTriplet(int* nums, int numsSize){
+    if (numsSize < 3) return false;
+    int l = nums[0], m = 0x7fffffff;
+    for (int i = 1; i < numsSize; i++) {
+        int a = nums[i];
+        if (a <= l) l = a;
+        else if (a < m) m = a;
+        else if (a > m) return true;
+    }
+    return false;
+}
