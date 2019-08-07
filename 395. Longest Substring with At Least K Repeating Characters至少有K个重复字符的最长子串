@@ -1,0 +1,28 @@
+//4ms 7.5M
+#define max(a, b) (a) > (b) ? (a) : (b)
+
+static int longestSubstringInt(char* begin, char *end, int k) {
+    int count[26] = {0}, res = 0, needSplit = 0;
+    char *p, *p1;
+        
+    for (p = begin; p < end; p++)
+        count[*p - 'a']++;
+    for (p = begin; p < end; p++)
+        if (count[*p - 'a'] > 0 && count[*p - 'a'] < k)
+            needSplit = 1;
+    if (!needSplit)
+        return end - begin;
+            
+    for (p = begin; p < end; p = p1) {
+        for (; p < end && count[*p - 'a'] < k; p++);
+        if (p == end)
+            break;
+        for (p1 = p + 1; p1 < end && count[*p1 - 'a'] >= k; p1++);
+        res = max(res, longestSubstringInt(p, p1, k));
+    }
+    return res;
+}
+
+int longestSubstring(char* s, int k) {
+    return longestSubstringInt(s, s + strlen(s), k);
+}
