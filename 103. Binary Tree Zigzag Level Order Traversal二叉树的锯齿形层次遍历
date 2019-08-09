@@ -1,0 +1,60 @@
+//0-4ms 7.9M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+int** zigzagLevelOrder(struct TreeNode* root, int* returnSize, int** rCS){
+    if(!root){
+        *returnSize = 0;
+        *rCS = NULL;
+        return NULL;
+    }
+    int layer = 0,ll = 1,rl = 0;
+    int **result = (int**)malloc(sizeof(int*)*100);
+    *rCS = malloc(sizeof(int)*100);
+    struct TreeNode ltr[1000];
+    struct TreeNode rtl[1000];
+    ltr[0] = *root;
+    while(ll||rl){
+        if(ll>0){
+            *(*rCS+layer) = ll;
+            result[layer++] = (int*)malloc(sizeof(int)*ll);
+            int i = 0;
+            while(i<ll) {
+                result[layer-1][i] = ltr[i].val;
+                if(ltr[ll-1-i].right) rtl[rl++] = *ltr[ll-1-i].right;
+                if(ltr[ll-1-i].left) rtl[rl++] = *ltr[ll-1-i].left;
+                i++;
+            }
+            ll = 0;
+            continue;
+        }
+        if(rl>0){
+            *(*rCS+layer) = rl;
+            result[layer++] = (int*)malloc(sizeof(int)*rl);
+            int i = 0;
+            while(i<rl) {
+                result[layer-1][i] = rtl[i].val;
+                if(rtl[rl-1-i].left) ltr[ll++] = *rtl[rl-1-i].left;
+                if(rtl[rl-1-i].right) ltr[ll++] = *rtl[rl-1-i].right;
+                i++;
+            }
+            rl = 0;
+            continue;
+        }
+    }
+    *returnSize = layer;
+    return result;
+}
