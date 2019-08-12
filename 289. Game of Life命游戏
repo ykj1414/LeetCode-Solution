@@ -1,0 +1,83 @@
+//0ms 7.4M 利用O(mn)额外空间 非原地算法
+int helper(int num,int board){
+    if(num==3) return 1;
+    else if(num==2&&board) return 1;
+    else return 0;
+}
+
+void gameOfLife(int** board, int boardSize, int* boardColSize){
+    //printf("%d,%d\n",boardSize,*boardColSize);
+    if(boardSize<1||*boardColSize<1) return;
+    if(boardSize==1){
+        for(int i = 0;i<*boardColSize;i++) board[0][i] = 0;
+        return;
+    }
+    if(*boardColSize==1){
+        for(int i = 0;i<boardSize;i++) board[i][0] = 0;
+        return;
+    }
+    int **result = (int**)malloc(sizeof(int*)*boardSize);
+    int c = *boardColSize;
+    for(int i = 1;i<boardSize-1;i++){
+        result[i] = (int*)malloc(sizeof(int)*(*boardColSize));
+        int num0 = board[i-1][0]+board[i-1][1]+board[i][1]+board[i+1][0]+board[i+1][1];
+        result[i][0] = helper(num0,board[i][0]);
+        int num1 = board[i-1][c-1]+board[i-1][c-2]+board[i][c-2]+board[i+1][c-2]+board[i+1][c-1];
+        result[i][c-1] = helper(num1,board[i][c-1]);
+        for(int j = 1;j<*boardColSize-1;j++){
+            int num = board[i-1][j-1]+board[i-1][j]+board[i-1][j+1]+
+                board[i][j-1]+board[i][j+1]+
+                board[i+1][j-1]+board[i+1][j]+board[i+1][j+1];
+            result[i][j] = helper(num,board[i][j]);
+        }
+    }
+    result[0] = (int*)malloc(sizeof(int)*c);
+    result[boardSize-1] = (int*)malloc(sizeof(int)*c);
+    int num00 = board[0][1]+board[1][0]+board[1][1];
+    result[0][0] = helper(num00,board[0][0]);
+    int num01 = board[0][c-2]+board[1][c-2]+board[1][c-1];
+    result[0][c-1] = helper(num01,board[0][c-1]);
+    int num10 = board[boardSize-1][1]+board[boardSize-2][0]+board[boardSize-2][1];
+    result[boardSize-1][0] = helper(num10,board[boardSize-1][0]);
+    int num11 = board[boardSize-1][c-2]+board[boardSize-2][c-1]+board[boardSize-2][c-2];
+    result[boardSize-1][c-1] = helper(num11,board[boardSize-1][c-1]);
+    for(int j = 1;j<c-1;j++){
+        int num0 = board[0][j-1]+board[0][j+1]+board[1][j-1]+board[1][j]+board[1][j+1];
+        result[0][j] = helper(num0,board[0][j]);
+        int num1 = board[boardSize-1][j-1]+board[boardSize-1][j+1]+board[boardSize-2][j-1]+board[boardSize-2][j+1]+board[boardSize-2][j];
+        result[boardSize-1][j] = helper(num1,board[boardSize-1][j]);
+    }
+    for(int i = 0;i<boardSize;i++){
+        for(int j = 0;j<c;j++){
+            board[i][j] = result[i][j];
+        }
+        free(result[i]);
+    }
+    free(result);
+}
+
+//0ms 7.2MB 非常聪明的一种原地算法
+const int dx[] = {0, 0, 1, 1, 1,-1,-1,-1};
+const int dy[] = {1,-1, 0, 1,-1, 0, 1,-1};
+void gameOfLife(int** board, int row, int *c) {
+    int col = *c;
+    for(int i =  0; i < row; i++)
+        for(int j = 0; j < col; j++)
+        {
+            int cnt = 0;
+            for(int k = 0; k < 8; k++)
+            {
+                int x = i + dx[k], y = j + dy[k];
+                if(x < 0 || y < 0 || x >= row || y >= col)
+                    continue;
+                cnt += (board[x][y]&1);
+            }
+            if((board[i][j] & 1) &&(cnt == 2 || cnt ==3) )
+                board[i][j] |= 2;
+            if(!(board[i][j] & 1) && cnt == 3)
+                board[i][j] |= 2;
+        }
+    for(int i = 0; i < row; i++)
+        for(int j = 0; j < col; j++)
+            board[i][j] >>= 1;
+}
