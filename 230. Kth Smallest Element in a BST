@@ -1,0 +1,31 @@
+//12ms 11.6MB
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void helper(struct TreeNode*root,int k,int *i,int *r){
+    if(!root) return;
+    if(*i==k) return;
+    else if(*i<k){
+        helper(root->left,k,i,r);
+        *i+=1;
+        if(*i==k){
+            *r = root->val;
+            return;
+        }
+        else helper(root->right,k,i,r);
+    }
+    else return;
+}
+
+int kthSmallest(struct TreeNode* root, int k){
+    if(!root) return 0;
+    int result = 0;
+    int i = 0;
+    helper(root,k,&i,&result);
+    return result;
+}
