@@ -1,0 +1,76 @@
+//112ms 13.9M
+#define SIZE 200000    
+struct HashArray
+{
+    int key;
+    int count;
+    struct HashArray* next;
+}Hash[SIZE];       
+void addHash(int num)     
+{
+    int temp=abs(num%SIZE);    
+    if(Hash[temp].key==0)
+    {
+        Hash[temp].key=num;
+        Hash[temp].count++;
+    }else if(Hash[temp].key==num)
+    {
+        Hash[temp].count++;     
+    }else
+    {
+        struct HashArray *p=&Hash[temp]; 
+        while(p->key!=num&&p->next!=NULL)    
+        {p=p->next;}
+        if(p->key==num)
+        {p->count++;}
+        else
+        {
+            p->next=(struct HashArray*)malloc(sizeof(struct HashArray));
+            p=p->next;
+            p->key=num;
+            p->count=1;
+            p->next=NULL;
+        }
+    }   
+}
+int searchHash(int num){
+    int temp=abs(num%SIZE);     
+    if(Hash[temp].count==0)
+    {
+        return 0;
+    }else if(Hash[temp].key==num)
+    {
+        return Hash[temp].count;     
+    }else
+    {
+        struct HashArray *p=&Hash[temp]; 
+        while(p->key!=num&&p->next!=NULL)    
+        {p=p->next;}
+        if(p->key==num)
+        {return p->count;}
+        else
+        {
+            return 0;
+        }
+    } 
+    return 0;
+}
+int fourSumCount(int* A, int ASize, int* B, int BSize, int* C, int CSize, int* D, int DSize) {
+    int ret=0;
+    for(int i=0;i<SIZE;i++){
+        Hash[i].key=0;
+        Hash[i].count=0;
+        Hash[i].next=NULL; 
+    }
+    for(int i=0;i<ASize;i++){
+        for(int j=0;j<BSize;j++){
+            addHash(A[i]+B[j]);
+        }
+    }
+    for(int i=0;i<CSize;i++){
+        for(int j=0;j<DSize;j++){
+            ret=ret+searchHash(-(C[i]+D[j]));
+        }
+    }
+    return ret;
+}
