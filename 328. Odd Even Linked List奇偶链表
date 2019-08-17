@@ -1,0 +1,83 @@
+//28ms 8.2M
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+
+struct ListNode* oddEvenList(struct ListNode* head){
+    struct ListNode*cur = head;
+    int step = 0;
+    while(cur){
+        //printf("cur:%d\n",cur->val);
+        step++;
+        if(cur->next){
+            int i = step;
+            struct ListNode*odd = cur->next;
+            while(--i&&odd){
+                odd = odd->next;
+            }
+            if(!odd) return head;
+            if(odd->next){
+                struct ListNode*even = odd->next;
+                struct ListNode *pre = cur->next;
+                cur->next = even;
+                odd->next = even->next;
+                even->next = pre;
+                cur = cur->next;
+            }
+            else return head;
+        }
+        else return head;
+    }
+    return head;
+}
+
+//8ms 8.3M
+struct ListNode* oddEvenList(struct ListNode* head) {
+    if(head == NULL || head->next == NULL)
+    return head;
+    
+    struct ListNode* odd = head;
+    struct ListNode* even = head->next;
+    struct ListNode* current = even->next;
+    struct ListNode* ptr1 = odd;
+    struct ListNode* ptr2 = even;
+    
+    bool isOddPlace = true;
+    
+    while(current != NULL)
+    {
+        if(isOddPlace)
+        {
+          ptr1->next = current;
+          ptr1 = current;
+          isOddPlace = false;   
+        }
+        else
+        {
+          ptr2->next = current;
+          ptr2 = current;
+          isOddPlace = true;
+        }
+        current = current->next;
+    }
+    
+    ptr1->next = even;
+    ptr2->next = NULL;
+    
+    return head;
+}
+//4ms 8.3M 这种写法可以留意一下，比第二份代码更加巧妙，思路都是用两个节点去储存奇数和偶数链表节点
+struct ListNode* oddEvenList(struct ListNode* head) 
+{
+     struct ListNode nodes[2] = {{0, NULL}, {0, NULL}};
+     struct ListNode * lists[2] = {&nodes[0], &nodes[1]};
+     for(int flag = 0; head; head = head->next, flag = !flag) lists[flag] = lists[flag]->next = head;
+     lists[0]->next = nodes[1].next;
+     lists[1]->next = NULL;
+     return nodes[0].next;
+}
