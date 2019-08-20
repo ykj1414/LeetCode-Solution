@@ -47,3 +47,36 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
     p->next = NULL;
     return head.next;
 }
+
+//4ms 8.5M 递归写法，更加简洁
+int n = 0;
+struct ListNode* helper(struct ListNode*l){
+    if(l==NULL){
+        if(n==0) return NULL;
+        else{
+            struct ListNode*end = (struct ListNode*)malloc(sizeof(struct ListNode));
+            end->val = n;
+            n = 0;
+            end->next = NULL;
+            return end;
+        }
+    }
+    int cur = n==0?l->val:l->val+n;
+    n = cur/10;
+    cur = cur%10;
+    l->val = cur;
+    l->next = helper(l->next);
+    return l;
+}
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
+    if(l1==NULL) 
+    return helper(l2);
+    if(l2==NULL)
+        return helper(l1);
+    int cur = n==0?l1->val+l2->val:l1->val+l2->val+n;
+    n = cur/10;
+    cur = cur%10;
+    l1->val = cur;
+    l1->next = addTwoNumbers(l1->next,l2->next);
+    return l1; 
+}
