@@ -1,3 +1,4 @@
+//偷懒的python解法
 class Solution(object):
     def letterCombinations(self, digits):
         if not digits:
@@ -14,3 +15,49 @@ class Solution(object):
         for i in xrange(index, len(digits)):
             for j in dic[digits[i]]:
                 self.dfs(digits, dic, i+1, path+j, res)
+
+// 4ms C解法
+char dict[8][4] = {{'a','b','c'},{'d','e','f'},{'g','h','i'},{'j','k','l'},{'m','n','o'},{'p','q','r','s'},{'t','u','v'},{'w','x','y','z'}};
+int len[8] = {3,3,3,3,3,4,3,4};
+void helper(char **result,int *a,int *pre,int *num,int i,int length){
+    if(i==length-1){
+        for(int j = 0;j<len[a[length-1]];j++){
+            result[*num] = (char*)malloc(length+1);
+            result[*num][i+1] = '\0';
+            result[*num][i] = dict[a[length-1]][j];
+            while(i){
+                --i;
+                result[*num][i] = dict[a[i]][pre[i]];
+            }
+            i = length-1;
+            *num+=1;
+        }
+    }
+    else{
+        for(int j = 0;j<len[a[i]];j++){
+            pre[i] = j;
+            helper(result,a,pre,num,i+1,length);
+        }
+    }
+}
+char ** letterCombinations(char * digits, int* returnSize){
+    int length = strlen(digits);
+    if(length<1){
+        *returnSize = 0;
+        return NULL;
+    }
+    int *a = (int*)malloc(sizeof(int)*length);
+    int i = 0;
+    *returnSize = 1;
+    while(*digits){
+        a[i++] = (*digits++)-50;
+        *returnSize*=len[a[i-1]];
+    }
+    i = 0;
+    char **result = (char**)malloc(sizeof(char*)*(*returnSize));
+    int *pre = (int*)malloc(sizeof(int)*(length-1));
+    helper(result,a,pre,&i,0,length);
+    free(pre);
+    free(a);
+    return result;
+}
