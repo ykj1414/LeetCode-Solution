@@ -1,0 +1,19 @@
+//20ms  10M
+int countPrimes(int n){
+    bool *pb = calloc(n,sizeof(bool));
+	int res=0;
+	int idx=2;
+	while(idx<n){
+        if(!pb[idx]){
+            res+=1; 
+            int op = 2*idx;
+            while(op<n){
+                pb[op] = 1;
+                op+=idx;
+            }
+        }
+        idx++;
+    }
+	free(pb);
+	return res;
+}
