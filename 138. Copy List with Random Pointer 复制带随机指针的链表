@@ -1,0 +1,80 @@
+//暴力解法 420ms 14.3M
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val, next, random):
+        self.val = val
+        self.next = next
+        self.random = random
+"""
+class Solution(object):
+    def copyRandomList(self, head):
+        """
+        :type head: Node
+        :rtype: Node
+        """
+        res = Node(0,None,None)
+        if(head):
+            res.val = head.val
+        else:
+            return
+        Nlist = []
+        Sid = []
+        Val = []
+        Random = []
+        num = 0;
+        while(head):
+            num+=1
+            Sid.append(id(head))
+            Val.append(head.val)
+            Random.append(id(head.random))
+            head = head.next
+        cur = res
+        length = num
+        for i in Val:
+            cur.val = i
+            num-=1
+            Nlist.append(cur)
+            if(num>0):
+                nn = Node(0,None,None)
+                cur.next = nn
+                cur = cur.next
+        for i in range(length):
+            for j in range(length):
+                if(Sid[i]==Random[j]):
+                    Nlist[j].random = Nlist[i]
+        return Nlist[0]
+ //利用表映射的方法，380ms 14.5M
+ # Definition for a Node.
+class Node(object):
+    def __init__(self, val, next, random):
+        self.val = val
+        self.next = next
+        self.random = random
+"""
+class Solution(object):
+    def copyRandomList(self, head):
+        if not head:
+            return None
+        p = head
+        while p:
+            node = Node(p.val,None,None)
+            node.next = p.next
+            p.next = node
+            p = p.next.next
+        p = head    
+        while p:
+            if p.random:
+                p.next.random = p.random.next
+            p = p.next.next
+        newhead = head.next
+        pold = head
+        pnew = newhead
+        while pnew.next:
+            pold.next = pnew.next
+            pold = pold.next
+            pnew.next = pold.next
+            pnew = pnew.next
+        pold.next = None
+        pnew.next = None
+        return newhead
