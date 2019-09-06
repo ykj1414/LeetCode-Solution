@@ -1,0 +1,21 @@
+//0ms 7.6M
+bool isPalindrome(char * s){
+    char *e = s;
+    while(*e) {
+        if(*e>=97&&*e<=122) *e-=32;
+        e++;
+    }
+    e--;
+    char *ss = s;
+    while(ss<=e){
+        if((*ss>=65&&*ss<=90)||(*ss>=48&&*ss<=57)){
+            if((*e>=65&&*e<=90)||(*e>=48&&*e<=57)){
+                if(*ss++==*e--) continue;
+                else return false;
+            }
+            else *e--;
+        }
+        else *ss++;
+    }
+    return true;
+}
