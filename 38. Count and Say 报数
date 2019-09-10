@@ -1,0 +1,37 @@
+char * countAndSay(int n){
+    char *res = (char*)malloc(10001);
+    res[10000] = '\0';
+    res[9999] = '1';
+    if(n==1) return res+9999;
+    char *helper = (char*)malloc(10001);
+    helper[10000] = '\0';
+    char *p;
+    while(n>1){
+        p = res+9999;
+        char *cur = helper;
+        while(*p>48&&*p<58){
+            //printf("%c\n",*p);
+            int num = 1;
+            *cur++=*p;
+            if(*(p-1)!=*p){
+                *cur++=num+48;
+                p--;
+            }
+            else{
+                while(*(p-1)==*p){
+                    p--;
+                    num++;
+                }
+                *cur++=num+48;
+                p--;
+            }
+        }
+        *cur = '\0';
+        p = res+9999;
+        cur = helper;
+        while(*cur) *p--=*cur++;
+        n--;
+    }
+    free(helper);
+    return p+1;
+}
