@@ -1,0 +1,91 @@
+//20ms 暴力解法
+double findMedianSortedArrays(int* nums1, int m, int* nums2, int n){
+    int *nums = (int*)malloc(sizeof(int)*(m+n));
+    int m1 = m;
+    int n1 = n;
+    int *p = nums;
+    while(m1>0&&n1>0){
+        if(*nums1<*nums2) {
+            *nums++=*nums1++;
+            m1--;
+        }
+        else {
+            *nums++=*nums2++;
+            n1--;
+        }
+    }
+    while(m1>0){
+        *nums++=*nums1++;
+        m1--;
+    }
+    while(n1>0){
+        *nums++=*nums2++;
+        n1--;
+    }
+    nums = p;
+    if((m+n)%2==0) return (nums[(m+n)/2]+nums[(m+n)/2-1])/2.0;
+    else return nums[(m+n)/2];
+}
+
+//使用二分查找的解法，但是未完成，由于有太多边界条件无法考虑到
+#define Min(a,b) a<b?a:b
+#define Max(a,b) a>b?a:b
+int res[2] = {0,0};
+void helper(int *a,int m,int *b,int n,int k,bool flag){
+    if(m>n) helper(b,n,a,m,k,flag);
+    if(m==0) {
+        if(flag){
+            res[0] = a[-1];
+            res[1] = b[0];
+        }
+        else res[0] = b[k-1];
+        return;
+    }
+    if(k==1) {
+        if(flag){
+            res[0] = a[0];
+            res[1] = b[0];
+        }
+        else {
+            if(m==1) res[0] = Max(a[0],b[0]);
+            else res[0] = Min(a[0],b[0]);
+        }
+        return;
+    }
+    int ma = Min(m,k/2);
+    int mb = k-ma;
+    ma = ma==0?1:ma;
+    if(a[ma-1]<b[mb-1]) helper(a+ma,m-ma,b,n,k-ma,flag);
+    else if(a[ma-1]>b[mb-1]) helper(a,m,b+mb,n-mb,k-mb,flag);
+    else{
+        if(flag){
+            res[0] = a[ma-1];
+            res[1] = a[ma-1];
+        }
+        else res[0] = a[ma-1];
+        return;
+    }
+}
+
+double findMedianSortedArrays(int* nums1, int m, int* nums2, int n){
+    if(m>n) return findMedianSortedArrays(nums2,n,nums1,m);
+    if(m==0){
+        if(n & 0x1) return nums2[n/2];
+        else return (nums2[n/2]+nums2[n/2-1])/2.0;
+    }
+    if(nums1[0]>nums2[n-1]){
+        if((m+n) & 0x1) return nums2[(m+n)/2];
+        else {
+            if(m==n) return (nums2[n-1]+nums1[0])/2.0;
+            else return (nums2[(m+n)/2]+nums2[(m+n)/2-1])/2.0;
+        }
+    }
+    if((m+n) & 0x1){
+        helper(nums1,m,nums2,n,(m+n)/2,false);
+        return res[0];
+    }
+    else {
+        helper(nums1,m,nums2,n,(m+n)/2,true);
+        return (res[0]+res[1])/2.0;
+    }
+}
