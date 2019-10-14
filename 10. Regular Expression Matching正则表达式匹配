@@ -1,0 +1,28 @@
+//4ms 7.5M
+bool isMatch(char * s, char * p){
+    int ls = strlen(s),lp = strlen(p);
+    bool **res = (bool**)malloc(sizeof(bool*)*(ls+1));
+    for(int i = 0;i<=ls;i++) {
+        res[i] = (bool*)calloc((lp+1),sizeof(bool));
+    }
+    res[ls][lp] = true;
+    for(int i = ls;i>=0;i--){
+        for(int j = lp-1;j>=0;j--){
+            bool cur = i<ls&(p[j]==s[i]|p[j]=='.');
+            if(j+1<lp&&p[j+1]=='*'){
+                res[i][j] = i<ls?res[i][j+2]|(res[i+1][j]&cur):res[i][j+2];
+            }
+            else{
+                res[i][j] = i<ls?cur&res[i+1][j+1]:cur;
+            }
+        }
+    }
+    bool result = res[0][0];
+    for(int i = 0;i<=ls;i++) {
+        // for(int j = 0;j<=lp;j++) printf("%d\t",res[i][j]);
+        // printf("\n");
+        free(res[i]);
+    }
+    free(res);
+    return result;
+}
