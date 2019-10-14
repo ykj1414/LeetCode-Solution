@@ -1,0 +1,24 @@
+//4ms 7.9M
+int longestValidParentheses(char * s){
+    int *res = (int*)calloc(strlen(s),sizeof(int));
+    int len = strlen(s);
+    int rl = 0;
+    for(int i = 0;i<len;i++){
+        if(s[i]==')'){
+            if(i==0) continue;
+            if(s[i-1]=='(') {
+                res[i]=i>=2?res[i-2]+2:2;
+            }
+            if(s[i-1]==')'&&res[i-1]>0){
+                if(i-res[i-1]-1>=0){
+                    if(s[i-res[i-1]-1]=='(') {
+                        res[i]=res[i-1]+2;
+                        if(i-res[i-1]-1>=1) res[i]+=res[i-res[i-1]-2];
+                    }
+                }            
+            }
+        }
+        rl = rl>res[i]?rl:res[i];
+    }
+    return rl;
+}
