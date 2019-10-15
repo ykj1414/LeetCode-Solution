@@ -1,0 +1,13 @@
+//0ms 7M O(2N)复杂的 O(N)空间复杂度
+int firstMissingPositive(int* nums, int numsSize){
+    int *res = (int*)calloc(numsSize+2,sizeof(int));
+    for(int i = 0;i<numsSize;i++){
+        if(nums[i]<=0||nums[i]>numsSize) continue;
+        res[nums[i]] = 1;
+    }
+    for(int i = 1;i<=numsSize+1;i++){
+        //printf("%d\n",res[i]);
+        if(res[i] ==0) return i;
+    }
+    return 1;
+}
