@@ -1,0 +1,28 @@
+//16ms 14.8M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int helper(struct TreeNode* root,int *max){
+    if(!root) return 0;
+    int l_path = root->val+helper(root->left,max);
+    *max = l_path>*max?l_path:*max;
+    int r_path = root->val+helper(root->right,max);
+    *max = r_path>*max?r_path:*max;
+    int c_path = l_path+r_path-root->val;
+    *max = c_path>*max?c_path:*max;
+    *max = root->val>*max?root->val:*max;
+    int cur_max = l_path>r_path?l_path:r_path;
+    return cur_max>root->val?cur_max:root->val;
+}
+
+int maxPathSum(struct TreeNode* root){
+    int result = root->val;
+    int c = helper(root,&result);
+    return result>c?result:c;
+}
