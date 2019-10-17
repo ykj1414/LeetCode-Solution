@@ -1,0 +1,65 @@
+//4ms 12.4M 滑动窗口法
+void helper(char *s,int l,int r,int *dic1,int *dic2,int *h){
+    char *a = s+l;
+    if(!dic1[*a]) return helper(s,l+1,r,dic1,dic2,h);
+    else {
+        if(r-l<h[1]-h[0]){
+            h[0] = l;
+            h[1] = r;
+        }
+        dic2[*a]--;
+    }
+    if(dic2[*a]>=dic1[*a]) return helper(s,l+1,r,dic1,dic2,h);
+    else{
+        char *p = s+r+1;
+        while(*p){
+            if(dic1[*p]) dic2[*p]++;
+            if(*p==*a) break;
+            p++;
+        }
+        if(*p) helper(s,l+1,p-s,dic1,dic2,h);
+        else return;
+    }
+}
+
+
+char * minWindow(char * s, char * t){
+    if(strlen(s)<strlen(t)) {
+        char *res = (char*)malloc(1);
+        res[0] = '\0';
+        return res;
+    }
+    int *dic1 = (int*)malloc(sizeof(int)*128);
+    int *dic2 = (int*)malloc(sizeof(int)*128);
+    memset(dic1,0,128*sizeof(int));
+    memset(dic2,0,128*sizeof(int));
+    char *p = t;
+    while(*p) dic1[*p++]++;
+    p = s;
+    int len = strlen(t);
+    while(*p){
+        if(dic1[*p]){
+            dic2[*p]++;
+            if(dic2[*p]<=dic1[*p]) len--;
+        }
+        if(!len) break;
+        p++;
+    }
+    char *res;
+    if(len){
+        res = (char*)malloc(1);
+        res[0] = '\0';
+    }
+    else {
+        int h[2];
+        h[0] = 0;
+        h[1] = p-s;
+        helper(s,h[0],h[1],dic1,dic2,h);
+        res = (char*)malloc(h[1]-h[0]+2);
+        *res = '\0';
+        strncat(res,s+h[0],h[1]-h[0]+1);
+    }
+    free(dic1);
+    free(dic2);
+    return res;
+}
