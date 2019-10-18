@@ -1,0 +1,77 @@
+//236ms 8,7M  稍许优化的暴力解法
+int helper(char **m,int row,int col,int mS,int mCS,int width){
+    if(row>=mS||col>=mCS) return 0;
+    if(m[row][col]=='0') return 0;
+    int c = col;
+    int w = width;
+    while(w--){
+        if(m[row][c++]=='0') return 0;  
+    }
+    return 1+helper(m,row+1,col,mS,mCS,width);
+}
+
+
+int maximalRectangle(char** matrix, int matrixSize, int* matrixColSize){
+    int max = 0;
+    if(!matrixSize) return max;
+    for(int i = 0;i<*matrixColSize;i++){
+        for(int j = 0;j<matrixSize;j++){
+            int h = 0;
+            for(int k = 0;k<*matrixColSize-i;k++){
+                if(matrix[j][k]=='0') continue;
+                h = helper(matrix,j,k,matrixSize,*matrixColSize,i+1);
+                max = h*(i+1)>max?h*(i+1):max;
+                if(h==matrixSize) break;
+            }
+            if(h==matrixSize) break;
+        }
+    }
+    return max;
+}
+//优化的栈方法，类似84题的柱状图最大矩形，同样是左右延伸找最大的宽度，只需要定义不同的行作为横轴即可
+//16ms 9.6M内存
+int helper(char *m,int mCS){
+    int *left = (int*)malloc(sizeof(int)*mCS);
+    int *right = (int*)malloc(sizeof(int)*mCS);
+    int i = 0;
+    for(;i<mCS;i++){
+        int j = i-1;
+        while(j>=0&&m[j]>=m[i]) j=left[j];
+        left[i] = j;
+    }
+    for(i = mCS-1;i>=0;i--){
+        int j = i+1;
+        while(j<mCS&&m[j]>=m[i]) j = right[j];
+        right[i] = j;
+    }
+    int res = m[0]-48;
+    for(i = 0;i<mCS;i++){
+        int cur = (m[i]-48)*(right[i]-left[i]-1);
+        res = cur>res?cur:res;
+    }
+    return res;
+}
+
+int maximalRectangle(char** matrix, int matrixSize, int* matrixColSize){
+    for(int i = matrixSize-1;i>=0;i--){
+        for(int j = 0;j<*matrixColSize;j++){
+            if(i==0||matrix[i][j]=='0') continue;
+            else{
+                if(i==matrixSize-1||matrix[i+1][j]<='1'){
+                    int k = i-1;
+                    while(k>=0&&matrix[k][j]!='0'){
+                        matrix[i][j]++;
+                        k--;
+                    }
+                }
+                else matrix[i][j] = matrix[i+1][j]-1;
+            }   
+        }
+    }
+    int max = 0;
+    for(int i = 0;i<matrixSize;i++){
+        int cur = helper(matrix[i],*matrixColSize);
+        max = cur>max?cur:max;
+    }
+    return max;
+}
