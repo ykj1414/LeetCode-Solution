@@ -1,0 +1,64 @@
+//1800MS 9.6M 优化的三向分治方法，但是依旧容易超时
+int Max(int a,int b,int c){
+    if(a>b){
+        if(a>c) return a;
+        else return c;
+    }
+    else{
+        if(b>c) return b;
+        else return c;
+    }
+}
+
+int helper(int*hs,int l,int r){
+    if(l>r) return 0;
+    int minl = l;
+    int minr = l;
+    for(int i = l;i<=r;i++){
+        if(hs[i]<hs[minl]) {
+            minl = i;
+            for(;i<=r&&hs[i]==hs[minl];i++)
+            minr = i-1;
+            i--;
+        }
+    } 
+    //printf("%d,%d\n",minl,minr);
+    return Max((hs[minl]*(r-l+1)),helper(hs,l,minl-1),helper(hs,minr+1,r));
+}
+
+int largestRectangleArea(int* heights, int heightsSize){
+    return helper(heights,0,heightsSize-1);
+}
+
+//8ms 8.8M
+int largestRectangleArea(int* heights, int heightsSize)
+{
+    if (!heightsSize)
+        return 0;
+    int *leftMost = (int *)malloc(heightsSize * sizeof(int));
+    int *rightMost = (int *)malloc(heightsSize * sizeof(int));
+    int i, j;
+    int max = heights[0];
+    int area;
+    for (i = 0; i < heightsSize; i++)
+    {
+        j = i - 1;
+        while(j >= 0 && heights[j] >= heights[i])
+            j = leftMost[j];
+        leftMost[i] = j;
+    }
+    for (i = heightsSize - 1; i >= 0; i--)
+    {
+        j = i + 1;
+        while(j < heightsSize && heights[j] >= heights[i])
+            j = rightMost[j];
+        rightMost[i] = j;
+    }
+    for (i = 0; i < heightsSize; i++)
+    {
+        area = (rightMost[i] - leftMost[i] - 1) * heights[i];
+        if (area > max)
+            max = area;
+    }
+    return max;
+}
