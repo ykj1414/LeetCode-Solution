@@ -1,0 +1,34 @@
+//296ms 9.5M
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* helper(struct ListNode *l,struct ListNode*r){
+    if(l==NULL&&r!=NULL) return r;
+    if(r==NULL&&l!=NULL) return l;
+    if(l==NULL&&r==NULL) return NULL;
+    if(l->val<=r->val) {
+        l->next = helper(l->next,r);
+        return l;
+    }
+    else{
+        r->next = helper(l,r->next);
+        return r;
+    }
+}
+
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize){
+    if(!listsSize) return NULL;
+    if(listsSize==1) return *lists;
+    struct ListNode head;
+    head.val = 0;
+    head.next = NULL;
+    for(int i = 0;i<listsSize;i++) {
+        struct ListNode *cur = head.next;
+        head.next = helper(cur,*(lists+i));
+    }
+    return head.next;
+}
