@@ -1,0 +1,52 @@
+//96ms 16.1M 暴力解法
+int helper(int *s,int k){
+    int max = *s;
+    while(k--){
+        max = *s>max?*s:max;
+        s++;
+    }
+    return max;
+}
+
+int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize){
+    if(!numsSize) {
+        int *res = (int*)malloc(0);
+        *returnSize = 0;
+        return res;
+    }
+    int *res = (int*)malloc(sizeof(int)*(numsSize-k+1));
+    *returnSize = numsSize-k+1;
+    for(int i = 0;i<=numsSize-k;i++){
+        res[i] = helper(nums+i,k);
+    }
+    return res;
+}
+
+//动态规划，68ms,16.3M
+#define max(a,b) a>b?a:b
+
+
+int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize){
+    if(!numsSize) {
+        int *res = (int*)malloc(0);
+        *returnSize = 0;
+        return res;
+    }
+    int *res = (int*)malloc(sizeof(int)*(numsSize-k+1));
+    *returnSize = numsSize-k+1;
+    int *left = (int*)malloc(sizeof(int)*(numsSize));
+    int *right = (int*)malloc(sizeof(int)*(numsSize));
+    for(int i = 0;i<numsSize;i+=k){
+        if(i>=numsSize) break;
+        int start = i;
+        int end = i+k-1>numsSize-1?numsSize-1:i+k-1;
+        left[end] = nums[end];
+        right[start] = nums[start];
+        for(int j = start+1,i=end-1;j<=end&&i>=start;j++,i--){
+            right[j] = max(nums[j],right[j-1]);
+            left[i] = max(nums[i],left[i+1]);
+        }    
+    }
+    for(int i = 0;i<=numsSize-k;i++) res[i] = max(left[i],right[i+k-1]);
+    return res;
+}
