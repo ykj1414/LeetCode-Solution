@@ -1,0 +1,34 @@
+//4ms 9.9M
+#define Min(a,b) a>b?b:a
+
+int minDistance(char * word1, char * word2){
+    int l1 = strlen(word1);
+    int l2 = strlen(word2);
+    if(l1==0&&l2==0) return 0;
+    else if(l1==0) return l2;
+    else if(l2==0) return l1;
+    int **res = (int**)malloc(sizeof(int)*(l1+1)*(l2+1));
+    for(int i = 0;i<l2+1;i++) res[i] = (int*)calloc(l1+1,sizeof(int));
+    for(int i = 0;i<l2+1;i++){
+        res[i][0] = i;
+        bool flag = 0;
+        for(int j = 1;j<l1+1;j++){
+            if(i==0){
+                res[i][j] = j;
+                continue;
+            }
+            else{
+                int cur = 0;
+                if(word1[j-1]==word2[i-1]) cur = res[i-1][j-1];
+                else cur = res[i-1][j-1]+1;
+                cur = Min(cur,(res[i][j-1]+1));
+                cur = Min(cur,(res[i-1][j]+1));
+                res[i][j] = cur;
+            }
+        }
+    }
+    int min = res[l2][l1];
+    for(int i = 0;i<l2+1;i++) free(res[i]);
+    free(res);
+    return min;
+}
