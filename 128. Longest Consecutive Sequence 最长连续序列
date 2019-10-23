@@ -1,0 +1,50 @@
+//4ms 7.7M C语言，排序做法
+int compareType(const void*a,const void *b){
+    int l = *(int*)a;
+    int r = *(int*)b;
+    if(l<=r) return -1;
+    else return 1;
+}
+
+int longestConsecutive(int* nums, int numsSize){
+    if(!numsSize) return 0;
+    qsort(nums,numsSize,sizeof(int),compareType);
+    int res = 0;
+    int cur = 0;
+    for(int i = 0;i<numsSize-1;i++) {
+        if(nums[i+1]-nums[i]==1)cur++;
+        else if(nums[i+1]==nums[i]) continue;
+        else{
+            res = res>cur+1?res:cur+1;
+            cur = 0;
+        }
+    }
+    return res>cur+1?res:cur+1;
+}
+//4ms 7.7M java 使用哈希表，构造线性空间求解
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> num_set = new HashSet<Integer>();
+        for (int num : nums) {
+            num_set.add(num);
+        }
+
+        int longestStreak = 0;
+
+        for (int num : num_set) {
+            if (!num_set.contains(num-1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+
+                while (num_set.contains(currentNum+1)) {
+                    currentNum += 1;
+                    currentStreak += 1;
+                }
+
+                longestStreak = Math.max(longestStreak, currentStreak);
+            }
+        }
+
+        return longestStreak;
+    }
+}
