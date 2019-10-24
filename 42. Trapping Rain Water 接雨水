@@ -1,0 +1,20 @@
+//4ms 7.5M
+int trap(int* height, int heightSize){
+    if(!heightSize) return 0;
+    int res = 0;
+    int *left = height;
+    int *right = height+heightSize-1;
+    int left_max = *left;
+    int right_max = *right;
+    while(left<right){
+        if(*left<*right){
+            if(*(left+1)<=left_max) res+=left_max-*++left;
+            else left_max = *++left;
+        }
+        else{
+            if(*(right-1)<=right_max) res+=right_max-*--right;
+            else right_max = *--right;
+        }
+    }
+    return res;
+}
