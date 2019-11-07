@@ -1,0 +1,21 @@
+//0ms 7.5M
+int uniquePathsWithObstacles(int** oG, int m, int* n){
+    long *p = (long*)calloc(*n,sizeof(long));
+    for(int i = 0;i<m;i++){
+        for(int j = 0;j<*n;j++){
+            if(j==0){
+                if(!oG[i][j]) {
+                    if(i==0) p[j] = 1;
+                }
+                else p[j] = 0;
+            }
+            else{
+                if(!oG[i][j]) p[j]+=p[j-1];
+                else p[j] = 0;
+            }
+        }
+    }
+    int res = p[*n-1];
+    free(p);
+    return res;
+}
