@@ -1,0 +1,22 @@
+//16ms 9.3M
+class Solution {
+public:
+    int N;
+    int maxCoins(vector<int>& nums) {
+        N = nums.size();
+        nums.insert(nums.begin(),1);
+        nums.push_back(1);
+        const int len = nums.size();
+        vector<vector<int>> d(len,vector<int>(len,0));
+        for(int c = 1;c <= N;++c){
+            for(int i = 1;i+c-1 <= N;++i){
+                const int j = i+c-1;
+                int& ans=d[i][j];
+                for(int k=i;k<=j;++k){
+                    ans=max(ans,nums[i-1]*nums[k]*nums[j+1]+d[i][k-1]+d[k+1][j]);
+                }
+            }
+        }
+        return d[1][N];
+    }
+};
