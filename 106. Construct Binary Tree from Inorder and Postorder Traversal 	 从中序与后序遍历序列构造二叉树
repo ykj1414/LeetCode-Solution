@@ -1,0 +1,23 @@
+//16ms 12.9M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+struct TreeNode* buildTree(int* inorder, int inorderSize, int* postorder, int postorderSize){
+    if(inorderSize<=0||postorderSize<=0) return NULL;
+    struct TreeNode* root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->val = postorder[postorderSize-1];
+    int i = 0;
+    for(;i<inorderSize;i++){
+        if(inorder[i]==postorder[postorderSize-1]) break;
+    }
+    root->left = buildTree(inorder,i,postorder,i);
+    root->right = buildTree(inorder+i+1,inorderSize-i-1,postorder+i,postorderSize-1-i);
+    return root;
+}
