@@ -1,0 +1,25 @@
+//0ms 7.5M
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void helper(struct TreeNode* root,int *sum,int cur){
+    if(!root) return;
+    cur=cur*10+root->val;
+    if(!root->left&&!root->right) {
+        *sum+=cur;
+        return;
+    }
+    helper(root->left,sum,cur);
+    helper(root->right,sum,cur);
+}
+
+int sumNumbers(struct TreeNode* root){
+    int res = 0;
+    helper(root,&res,0);
+    return res;
+}
