@@ -1,0 +1,49 @@
+//16ms 12.2M python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def __init__(self):
+        self.left = 0
+        self.right = 0
+        self.height = 0
+    def verticalTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        dict_r = {}
+        
+        def helper(root,x,y,dict_r):
+            if not root:
+                return
+            if self.left>x:
+                self.left = x
+            if self.right<x:
+                self.right = x
+            if self.height<y:
+                self.height = y
+            if not dict_r.get(x):
+                dict_r[x] = {}
+            if dict_r[x].get(y) == None:
+                dict_r[x][y]=[root.val]
+            else:
+                dict_r[x][y].append(root.val)
+            helper(root.left,x-1,y+1,dict_r)
+            helper(root.right,x+1,y+1,dict_r)
+        
+        helper(root,0,0,dict_r)
+        #print(dict_r,self.left,self.right,self.height)
+        res = []
+        for i in range(self.left,self.right+1):
+            cur = []
+            for j in range(0,self.height+1):
+                if not dict_r[i].get(j)==None:
+                    dict_r[i][j].sort()
+                    cur.extend(dict_r[i][j])
+            res.append(cur)
+        return res
