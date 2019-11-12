@@ -1,0 +1,98 @@
+//48ms 9M 暴力解法
+bool helper(int *sums,int*nums,int length,int end,int k){
+    if(end<0) return false;
+    for(int i = 0;i<=end;i++) {
+        sums[i]+=nums[i+length-1];
+        if(length>=2) 
+        {
+            if(!k){
+                if(!sums[i]) return true;
+            }
+            else{
+                if(sums[i]%k==0) return true;
+            }
+        }
+    }
+    return helper(sums,nums,length+1,end-1,k);
+}
+
+bool checkSubarraySum(int* nums, int numsSize, int k){
+    int *sums = (int*)calloc(numsSize,sizeof(int));
+    bool res =  helper(sums,nums,1,numsSize-1,k);
+    free(sums);
+    return res;
+}
+
+//24ms 17M 利用hashmap的思想
+#define HASHSZ 97317
+
+struct entry {
+    struct entry *next;
+    int key;
+    int val;
+};
+
+struct entry** table;
+
+void hashinit();
+int hashin(int);
+int hashinsert(int, int);
+
+bool checkSubarraySum(int* nums, int numsSize, int k){
+    
+    int i, j, sum;
+    
+    if (nums==NULL || numsSize < 2) return false;
+    
+    k=abs(k);
+    
+    if (k==1) return true;
+    
+    if (k==0) {
+        for (i=1; i < numsSize; i++)
+            if (nums[i]==0 && nums[i-1]==0)
+                return true;
+        
+        return false;
+    }
+    
+    hashinit();
+      
+    sum=nums[0];
+    (void)hashinsert(0, 0);//这一步很重要
+    (void)hashinsert(sum%k, 1);
+      
+    for (i=1; i < numsSize; i++) {
+        sum += nums[i];
+        if ((j=hashinsert(sum%k, i+1)) != -1)
+            if ((i+1-j) > 1)
+                return true;
+    }
+    return false;
+}
+
+void hashinit() {
+    table=(struct entry**)calloc(HASHSZ, sizeof(struct entry*));
+}
+
+int hashin(int key) {
+    return abs(key)%HASHSZ;
+}
+
+int hashinsert(int key, int val) {
+    int k=hashin(key);
+    
+    struct entry* cur;
+    
+    for (cur=table[k]; cur; cur=cur->next)
+        if (cur->key==key)
+            return cur->val;
+    
+    cur=(struct entry*)malloc(sizeof(struct entry));
+    cur->key=key;
+    cur->val=val;
+    cur->next=table[k];
+    table[k]=cur;
+    
+    return -1;
+}
