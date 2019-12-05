@@ -1,0 +1,126 @@
+//1400ms Python 12.2M
+class Solution(object):
+
+    def maxPoints(self, points):
+        """
+        :type points: List[List[int]]
+        :rtype: int
+        """
+        res = 2
+        l_points = len(points)
+        if l_points<=0:
+            return 0
+        elif l_points==1:
+            return 1
+        d_lines = {}
+        def fun1(p,q):
+            temp = p%q
+            while(temp!=0):
+                p = q
+                q = temp
+                temp = p%q
+            return q
+        def fun2(x,y,k):
+            if x<0 and y>0:
+                a = fun1(y,-x)
+                y = y/a
+                x = -x/a
+                if str(y)+str(x)==k[1:]:
+                    return True
+            elif x>0 and y<0:
+                a = fun1(-y,x)
+                y = -y/a
+                x = x/a 
+                if str(y)+str(x)==k[1:]:
+                    return True
+            elif x<0 and y<0:
+                a = fun1(-y,-x)
+                y = -y/a
+                x = -x/a
+                if str(y)+str(x)==k:
+                    return True
+            else:
+                a = fun1(y,x)
+                y = y/a
+                x = x/a
+                if str(y)+str(x)==k:
+                    return True
+            return False
+        def helper(k,p,j):
+            for i in range(j+1,l_points):
+                if p[0]==points[i][0] and p[1]==points[i][1]:
+                    d_lines[k]+=1
+                    continue
+                x = p[0]-points[i][0]
+                y = p[1]-points[i][1]
+                if x==0:
+                    if k=='x':
+                        d_lines[k]+=1
+                    else:
+                        continue
+                elif y==0:
+                    if k=='y':
+                        d_lines[k]+=1
+                    else:
+                        continue
+                else:
+                    if fun2(x,y,k):
+                        d_lines[k]+=1
+
+        for i in range(0,l_points):
+            cur = 2
+            for j in range(i+1,l_points):
+                x = points[i][0]-points[j][0]
+                y = points[i][1]-points[j][1]
+                if x==0 and y==0:
+                    cur+=1
+                    continue
+                k = 0
+                if x==0:
+                    k = 'x'
+                    if 'x' in d_lines.keys():
+                        continue
+                    else:
+                        d_lines['x'] = cur
+                        helper(k,points[i],j)
+                elif y==0:
+                    k = 'y'
+                    if 'y' in d_lines.keys():
+                        continue
+                    else:
+                        d_lines['y'] = cur
+                        helper(k,points[i],j)
+                else:
+                    if y<0 and x<0:
+                        a = fun1(-y,-x)
+                        y = -y/a
+                        x = -x/a
+                        k = str(y)+str(x)
+                    elif y<0 and x>0:
+                        a = fun1(-y,x)
+                        y = -y/a
+                        x = x/a
+                        k = '1'+str(y)+str(x)
+                    elif y>0 and x<0:
+                        a = fun1(y,-x)
+                        y = y/a
+                        x = -x/a
+                        k = '1'+str(y)+str(x)
+                    else:
+                        a = fun1(y,x)
+                        y = y/a
+                        x = x/a
+                        k = str(y)+str(x)
+                    if k in d_lines.keys():
+                        continue
+                    else:
+                        d_lines[k] = cur
+                        helper(k,points[i],j)
+                #print(cur,y,x,k,points[i],points[j],d_lines[k])
+                if d_lines[k]==2:
+                    del d_lines[k]
+                elif d_lines[k]>res:
+                    res = d_lines[k]
+            if res < cur-1:
+                res = cur-1
+        return res
