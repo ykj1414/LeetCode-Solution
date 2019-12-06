@@ -1,0 +1,71 @@
+//python暴力解法超时
+class Solution(object):
+    def wordBreak(self, s, wordDict):
+        """
+        :type s: str
+        :type wordDict: List[str]
+        :rtype: List[str]
+        """
+        w_len = len(wordDict)
+        if w_len<1:
+            return None
+        wordDict = sorted(wordDict,key = lambda x:len(x))
+        res = []
+        min_len = 1000
+        max_len = 0
+        w_dict = {}
+        for i in range(0,w_len):
+            c_len = len(wordDict[i])
+            if min_len > c_len:
+                min_len = c_len
+            if max_len < c_len:
+                max_len = c_len
+            if i==0:
+                w_dict[c_len] = [0]
+            else:
+                if c_len==len(wordDict[i-1]):
+                    continue
+                else:
+                    w_dict[len(wordDict[i-1])].append(i)
+                    w_dict[c_len] = [i]
+        w_dict[len(wordDict[w_len-1])].append(w_len)
+        def helper(start,end,cur):
+            if start>=end:
+                res.append(cur[1:])
+            for i in range(start,end+1):
+                if i-start <min_len:
+                    continue
+                if i-start > max_len:
+                    return
+                if i-start in w_dict.keys():
+                    if s[start:i] in wordDict[w_dict[i-start][0]:w_dict[i-start][1]]:
+                        helper(i,end,cur+" "+s[start:i])
+                    else:
+                        continue
+        helper(0,len(s),"")
+        return res
+        
+   //python 剪纸+回溯算法 28ms 12.2M
+   class Solution(object):
+    def wordBreak(self, s, wordDict):
+        """
+        :type s: str
+        :type wordDict: List[str]
+        :rtype: List[str]
+        """
+        w_len,wordDict= len(s),set(wordDict)
+        min_len,max_len = 1000,0
+        for i in wordDict:
+            min_len = min(min_len,len(i))
+            max_len = max(max_len,len(i))
+        def dfs(start):
+            if start not in memo:
+                res = []
+                for i in range(min_len,min(w_len-start,max_len)+1):
+                    if s[start:start+i] in wordDict:
+                        res.extend(list(map(lambda x:s[start:start+i]+' '+x,dfs(start+i))))
+                memo[start] = res
+            return memo[start]
+        
+        memo = {w_len:['']}
+        return list(map(lambda x:x[:-1],dfs(0)))
