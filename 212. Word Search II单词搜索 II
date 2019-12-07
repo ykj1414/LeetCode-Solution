@@ -1,0 +1,41 @@
+//python 224ms 27M dfs+trie
+class Solution(object):
+    def findWords(self, board, words):
+        """
+        :type board: List[List[str]]
+        :type words: List[str]
+        :rtype: List[str]
+        """
+        res = []
+        def dfs(i,j,t,s):
+            ch = board[i][j]
+            if ch not in t:
+                return
+            t = t[ch]
+            if "end"in t and t["end"]==1:
+                res.append(s+ch)
+                t["end"] = 0
+            board[i][j] = '0'
+            if i+1<m and board[i+1][j]!='0':
+                dfs(i+1,j,t,s+ch)
+            if j+1<n and board[i][j+1]!='0':
+                dfs(i,j+1,t,s+ch)
+            if j-1>=0 and board[i][j-1]!='0':
+                dfs(i,j-1,t,s+ch)
+            if i-1>=0 and board[i-1][j]!='0':
+                dfs(i-1,j,t,s+ch)
+            board[i][j] = ch
+        tree = {}        
+        for i in words:
+            t = tree
+            for j in i:
+                if j not in t:
+                    t[j] = {}
+                t = t[j]
+            t["end"] = 1
+        m = len(board)
+        n = len(board[0])
+        for i in range(m):
+            for j in range(n):
+                dfs(i,j,tree,"")
+        return res
