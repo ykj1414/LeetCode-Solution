@@ -1,0 +1,94 @@
+//C语言版本 200ms
+
+typedef struct {
+    int*old;
+    int*list;
+    int length;
+} Solution;
+
+
+Solution* solutionCreate(int* nums, int numsSize) {
+    Solution *new = (Solution*)malloc(sizeof(Solution));
+    new->length = numsSize;
+    new->old = (int*)malloc(sizeof(int)*numsSize);
+    new->list = (int*)malloc(sizeof(int)*numsSize);
+    for(int i = 0;i<numsSize;i++){
+        (new->old)[i] = nums[i];
+        (new->list)[i] = nums[i];
+    }
+    return new;
+}
+
+/** Resets the array to its original configuration and return it. */
+int* solutionReset(Solution* obj, int* retSize) {
+    *retSize = obj->length;
+    for(int i = 0;i<obj->length;i++) (obj->list)[i] = (obj->old)[i];
+    return obj->list;
+}
+
+/** Returns a random shuffling of the array. */
+int* solutionShuffle(Solution* obj, int* retSize) {
+    *retSize = obj->length;
+    for(int i = 0;i<*retSize;i++){
+        int pos = i+rand()%(obj->length-i);
+        int mid = (obj->list)[i];
+        (obj->list)[i] = (obj->list)[pos];
+        (obj->list)[pos] = mid;
+        //printf("%d\n",(obj->list)[i]);
+    }
+    return obj->list;
+}
+
+void solutionFree(Solution* obj) {
+    free(obj->list);
+    free(obj->old);
+    free(obj);
+}
+
+/**
+ * Your Solution struct will be instantiated and called as such:
+ * Solution* obj = solutionCreate(nums, numsSize);
+ * int* param_1 = solutionReset(obj, retSize);
+ 
+ * int* param_2 = solutionShuffle(obj, retSize);
+ 
+ * solutionFree(obj);
+*/
+//python版本
+import random
+class Solution(object):
+
+    def __init__(self, nums):
+        """
+        :type nums: List[int]
+        """
+        self.nums_list = nums
+        self.old = list(self.nums_list)
+        
+
+    def reset(self):
+        """
+        Resets the array to its original configuration and return it.
+        :rtype: List[int]
+        """
+        self.nums_list = self.old
+        self.old = list(self.old)
+        return self.nums_list
+        
+
+    def shuffle(self):
+        """
+        Returns a random shuffling of the array.
+        :rtype: List[int]
+        """
+        for i in range(0,len(self.nums_list)):
+            pos = random.randint(i,len(self.nums_list)-1)
+            self.nums_list[i],self.nums_list[pos] = self.nums_list[pos],self.nums_list[i]
+        return self.nums_list
+        
+
+
+# Your Solution object will be instantiated and called as such:
+# obj = Solution(nums)
+# param_1 = obj.reset()
+# param_2 = obj.shuffle()
