@@ -1,0 +1,160 @@
+//84ms 17M 
+# """
+# This is the interface that allows for creating nested lists.
+# You should not implement it, or speculate about its implementation
+# """
+#class NestedInteger(object):
+#    def isInteger(self):
+#        """
+#        @return True if this NestedInteger holds a single integer, rather than a nested list.
+#        :rtype bool
+#        """
+#
+#    def getInteger(self):
+#        """
+#        @return the single integer that this NestedInteger holds, if it holds a single integer
+#        Return None if this NestedInteger holds a nested list
+#        :rtype int
+#        """
+#
+#    def getList(self):
+#        """
+#        @return the nested list that this NestedInteger holds, if it holds a nested list
+#        Return None if this NestedInteger holds a single integer
+#        :rtype List[NestedInteger]
+#        """
+
+class NestedIterator(object):
+
+    def __init__(self, nestedList):
+        """
+        Initialize your data structure here.
+        :type nestedList: List[NestedInteger]
+        """
+        self.nlist = []
+        self.nlist.append(list(nestedList))
+        #print(self.nlist,len(self.nlist))
+        self.depth = 0
+
+    def next(self):
+        """
+        :rtype: int
+        """
+        a = self.nlist[self.depth].pop(0)
+        if len(self.nlist[self.depth])==0:
+            del(self.nlist[self.depth])
+        else:
+            self.depth+=1
+        if a.isInteger():
+            self.depth-=1
+            return a.getInteger()
+        else:
+            self.nlist.append(a.getList())
+            return self.next()
+            
+
+
+    def hasNext(self):
+        """
+        :rtype: bool
+        """
+        #print(self.nlist)
+        if self.depth<0 or len(self.nlist[self.depth])==0:
+            return False
+        else:
+            a = self.nlist[self.depth].pop(0)
+            if a.isInteger():
+                self.nlist.append([a])
+                if len(self.nlist[self.depth])==0:
+                    del(self.nlist[self.depth])
+                else:
+                    self.depth+=1
+                return True
+            else:
+                if len(self.nlist[self.depth])==0:
+                    del(self.nlist[self.depth])
+                else:
+                    self.depth+=1
+                if len(a.getList())==0:
+                    self.depth-=1
+                    return self.hasNext()
+                else:
+                    self.nlist.append(a.getList())
+                    return self.hasNext()
+        
+
+# Your NestedIterator object will be instantiated and called as such:
+# i, v = NestedIterator(nestedList), []
+# while i.hasNext(): v.append(i.next())
+//64ms 17.5M 直接遍历后一步步取出的写法
+class NestedIterator(object):
+
+    def __init__(self, nestedList):
+        """
+        Initialize your data structure here.
+        :type nestedList: List[NestedInteger]
+        """
+        self.nestedList = nestedList
+        self.list = []
+        self.pos = 0
+        self.makeList(nestedList)
+        
+    def makeList(self, l):
+        if l is None:
+            return
+        for e in l:
+            if e.isInteger():
+                self.list.append(e.getInteger())
+            else:
+                self.makeList(e.getList())
+        return 
+
+    def next(self):
+        """
+        :rtype: int
+        """
+        ret = self.list[self.pos]
+        self.pos = self.pos + 1
+        return ret
+        
+
+    def hasNext(self):
+        """
+        :rtype: bool
+        """
+        return self.pos < len(self.list)
+  //64ms 17.5M  yield用法迭代器写法
+class NestedIterator(object):
+
+    def __init__(self, nestedList):
+        """
+        Initialize your data structure here.
+        :type nestedList: List[NestedInteger]
+        """
+        def build_generator(nestedList):
+            for i in nestedList:
+                if i.isInteger():
+                    yield i.getInteger()
+                else:
+                    i = i.getList()
+                    for j in build_generator(i):
+                        yield j
+        self.g = build_generator(nestedList)
+
+    def next(self):
+        """
+        :rtype: int
+        """
+        #print(self.v)
+        return self.v
+
+    def hasNext(self):
+        """
+        :rtype: bool
+        """
+        try:
+            self.v = next(self.g)
+        #print(self.v)
+            return True
+        except:
+            return False
