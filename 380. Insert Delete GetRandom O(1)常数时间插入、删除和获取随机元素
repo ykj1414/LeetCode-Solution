@@ -1,0 +1,52 @@
+//利用set的做法，没有实现常数的删除操作
+import random
+class RandomizedSet(object):
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.nums = set()
+        
+
+    def insert(self, val):
+        """
+        Inserts a value to the set. Returns true if the set did not already contain the specified element.
+        :type val: int
+        :rtype: bool
+        """
+        if val in self.nums:
+            return False
+        else:
+            self.nums.add(val)
+            return True
+
+    def remove(self, val):
+        """
+        Removes a value from the set. Returns true if the set contained the specified element.
+        :type val: int
+        :rtype: bool
+        """
+        try:
+            self.nums.remove(val)
+            return True
+        except:
+            return False
+
+    def getRandom(self):
+        """
+        Get a random element from the set.
+        :rtype: int
+        """
+        a = list(self.nums)
+        return a[random.randint(0,len(a)-1)]
+
+        
+
+
+# Your RandomizedSet object will be instantiated and called as such:
+# obj = RandomizedSet()
+# param_1 = obj.insert(val)
+# param_2 = obj.remove(val)
+# param_3 = obj.getRandom()
+//利用哈希表键值不重复来完成插入，利用列表完成删除操作，通过哈希表中存入每个数字对应的下标，在删除时完成与尾部元素的互换，实现常数时间的删除操作
