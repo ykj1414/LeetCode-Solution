@@ -1,0 +1,57 @@
+//72ms 暴力DFS
+"""
+# Definition for a Node.
+class Node(object):
+    def __init__(self, val=0, left=None, right=None, next=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+"""
+class Solution(object):
+    def connect(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        tree_list = [[]]
+        def __bfs(root,index):
+            if root==None:
+                return
+            else:
+                if index>len(tree_list)-1:
+                    tree_list.append([root])
+                else:
+                    tree_list[index].append(root)
+                __bfs(root.left,index+1)
+                __bfs(root.right,index+1)
+        __bfs(root,0)
+        for i in tree_list:
+            for j in range(0,len(i)):
+                if j==len(i)-1:
+                    i[j].next = None
+                else:
+                    i[j].next = i[j+1]
+        return root
+//54ms 从左到右利用next节点的性质按层次遍历方法
+class Solution(object):
+    def connect(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        if not root:
+            return root
+        leftroot = root
+        leftroot.next = None
+        while leftroot.left:
+            head = leftroot
+            while head:
+                head.left.next = head.right
+                if head.next:
+                    head.right.next = head.next.left
+                else:
+                    head.right.next = None
+                head = head.next
+            leftroot = leftroot.left
+        return root
