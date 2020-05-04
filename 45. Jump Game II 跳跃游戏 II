@@ -1,0 +1,39 @@
+class Solution(object):
+#正向贪心算法，每次都找到当前下标能跳到的，最远位置的下标
+#最远位置 即是下标加上距离所能达到的最大位置
+    def jump(self,nums):
+        pos = 0
+        step = 0
+        while pos<len(nums)-1:
+            old = pos
+            r = 0
+            for i in range(1,nums[old]+1):
+                if i+old>=len(nums)-1:
+                    return step+1
+                if nums[i+old]+i+old>r:
+                    pos = old+i
+                    r = nums[pos]+pos
+            step+=1
+        return step
+
+
+        #反向贪心算法，python会超时，java可通过
+    # def jump(self, nums):
+    #     """
+    #     :type nums: List[int]
+    #     :rtype: int
+    #     """
+    #     end = len(nums)
+    #     res = [float("inf")]*end
+    #     res[end-1] = 0
+    #     ways = [end-1]
+    #     while ways:
+    #         cur = ways.pop(0)
+    #         for i in range(cur):
+    #             if nums[i]>=cur-i:
+    #                 ways.append(i)
+    #                 res[i] = min(res[i],res[cur]+1)
+    #                 if i==0:
+    #                     return res[0]
+    #     return res[0]
+            
