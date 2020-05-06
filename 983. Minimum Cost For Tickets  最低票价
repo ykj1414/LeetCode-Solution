@@ -1,0 +1,30 @@
+class Solution {
+    Integer []res;
+    int [] duration = {1,7,30};
+    int days[];
+    int costs[];
+    public int mincostTickets(int[] days, int[] costs) {
+        res = new Integer[days.length];
+        this.days = days;
+        this.costs = costs;
+        return dp(0);
+    }
+    
+    public int dp(int i){
+        if(i>=days.length)
+            return 0;
+        /*如果res[i]不为空，说明更早的节点已经访问过res[i]，或者i没有前进过
+        更早的节点必然比现在节点跨度更大,无需再进行买票判断操作，若i没有前进过，也无需再进行判断
+        直接返回res[i]即可。*/
+        if(res[i]!=null)
+            return res[i];
+        res[i] = Integer.MAX_VALUE;
+        //可以从i+1或者i处开始，不影响最后的结果，因为都是从最后一天开始往前逆推的。
+        int j = i+1;
+        for(int k = 0;k<3;k++){
+            for(;j<days.length&&days[j]<days[i]+duration[k];j++){}
+            res[i]  = Math.min(res[i],dp(j)+costs[k]);
+        }
+        return res[i];
+    }
+}
