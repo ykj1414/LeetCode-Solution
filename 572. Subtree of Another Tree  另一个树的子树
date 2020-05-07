@@ -1,0 +1,45 @@
+//10ms  39M内存
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        List<TreeNode> list = new ArrayList<TreeNode>();
+        list.add(s);
+        while(list.size()>0){
+            TreeNode cur = list.remove(0);
+            if(dfs(cur,t,false)) return true;
+            if(cur.left!=null)
+                list.add(cur.left);
+            if(cur.right!=null)
+                list.add(cur.right);
+        }
+        return false;
+    }
+
+    public boolean dfs(TreeNode s,TreeNode t,boolean inTree){
+        if(t==null&&s==null)
+            return true;
+        else if(t==null&&s!=null || t!=null&&s==null)
+            return false;
+        else if(t.val!=s.val){
+            if(inTree)
+                return false;
+            if(dfs(s.left,t,inTree))
+                return true;
+            else if(dfs(s.right,t,inTree))
+                return true;
+            else
+                return false;
+        }
+        else
+            return dfs(s.left,t.left,true)&dfs(s.right,t.right,true);
+    }
+}
