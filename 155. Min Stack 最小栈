@@ -146,3 +146,67 @@ void minStackFree(MinStack* stack) {
     free(stack->array);
     free(stack);
 }
+
+
+//6ms java版本
+class MinStack {
+    private int size = 0;
+    class Node{
+        int val;
+        Node next;
+        public Node(int val){
+            this.val = val;
+            this.next = null;
+        }
+    }
+    private Node head;
+    private Node minNode;
+    /** initialize your data structure here. */
+    public MinStack() {
+        head = null;
+        minNode = null;
+    }
+    
+    public void push(int x) {
+        Node cur = new Node(x);
+        Node min_cur = new Node(x);
+        if(size==0){
+            head = cur;
+            minNode = min_cur;
+        }
+        else{
+            cur.next = head;
+            head = cur;
+            if(min_cur.val>minNode.val)
+                min_cur.val = minNode.val;
+            min_cur.next = minNode;
+            minNode = min_cur;
+        }
+        size++;
+    }
+    
+    public void pop() {
+        if(size==0)
+            return;
+        minNode=minNode.next;
+        head = head.next;
+        size--;
+    }
+    
+    public int top() {
+        return head.val;
+    }
+    
+    public int getMin() {
+        return minNode.val;
+    }
+}
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack obj = new MinStack();
+ * obj.push(x);
+ * obj.pop();
+ * int param_3 = obj.top();
+ * int param_4 = obj.getMin();
+ */
