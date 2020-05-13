@@ -153,3 +153,45 @@ int** levelOrder(struct TreeNode* root, int** columnSizes, int* returnSize) {
     }
     return array;
 }
+
+
+//1ms 40M  java版本，使用List<List>保存了每一层TreeNode信息，在遍历TreeNode时，把值传给res即可
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res= new ArrayList<List<Integer>>();
+        List<List<TreeNode>> nodes= new ArrayList<List<TreeNode>>();
+        if(root==null)
+            return res;
+        int index = 0;
+        ArrayList<Integer> line = new ArrayList<Integer>();
+        ArrayList<TreeNode> nodeLine = new ArrayList<TreeNode>();
+        nodeLine.add(root);
+        nodes.add(nodeLine);
+        while(index<nodes.size()){
+            List<TreeNode> curNodes = nodes.get(index);
+            nodeLine = new ArrayList<TreeNode>();
+            for(TreeNode n : curNodes){
+                line.add(n.val);
+                if(n.left!=null)
+                    nodeLine.add(n.left);
+                if(n.right!=null)
+                    nodeLine.add(n.right);
+            }
+            res.add(line);
+            line = new ArrayList<Integer>();
+            if(nodeLine.size()>0)
+                nodes.add(nodeLine);
+            index+=1;
+        }
+        return res;
+    }
+}
