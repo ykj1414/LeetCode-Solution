@@ -1,0 +1,81 @@
+//8ms c 6.5M
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+typedef struct ListNode* treeNode;
+
+struct ListNode* reverseKGroup(struct ListNode* head, int k){
+    if(k<=1) return head;
+    if(!head) return NULL;
+    treeNode pre = head;
+    treeNode cur = head->next;
+    pre->next = NULL;
+    treeNode next = NULL;
+    int i = 1;
+    while(cur&&i<k){
+        next = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = next;
+        i+=1;
+    }
+    if(i==k)
+        head->next = reverseKGroup(next,k);
+    else{
+        cur = pre->next;
+        pre->next = NULL;
+        while(cur){
+            next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+    }
+    return pre;
+}
+
+//0ms java 40M
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(k==1) return head;
+        if(head==null) return null;
+        ListNode pre = head;
+        ListNode cur = head.next;
+        pre.next = null;
+        ListNode next = null;
+        int i = 1;
+        while(cur!=null&&i<k){
+            next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+            i++;
+        }
+        if(i==k)
+            head.next = reverseKGroup(next,k);
+        else{
+            cur = pre.next;
+            pre.next = null;
+            while(cur!=null){
+                next = cur.next;
+                cur.next = pre;
+                pre = cur;
+                cur = next;
+            }
+        }
+        return pre;
+    }
+}
