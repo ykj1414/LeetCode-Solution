@@ -1,0 +1,51 @@
+//20ms 8.7M  C
+bool helpValid(char * s,int start,int end,bool flag){
+    while(start<end){
+        if(s[start]==s[end]){
+            start++;
+            end--;
+        }
+        else{
+            if(!flag) return false;
+            if(helpValid(s,start+1,end,false))
+                return true;
+            else if(helpValid(s,start,end-1,false))
+                return true;
+            else
+                return false;
+        }
+    }
+    return true;
+}
+
+bool validPalindrome(char * s){
+    return helpValid(s,0,strlen(s)-1,true);
+}
+
+//6ms 40M java
+class Solution {
+    public boolean validPalindrome(String s) {
+        int start = 0;
+        int end = s.length()-1;
+        return helpValid(s,start,end,true);
+    }
+
+    private boolean helpValid(String s,int start,int end,boolean flag){
+        while(start<end){
+            if(s.charAt(start)==s.charAt(end)){
+                start++;
+                end--;
+            }
+            else{
+                if(!flag) return false;
+                if(helpValid(s,start+1,end,false))
+                    return true;
+                else if(helpValid(s,start,end-1,false))
+                    return true;
+                else
+                    return false;
+            }
+        }
+        return true;
+    }
+}
