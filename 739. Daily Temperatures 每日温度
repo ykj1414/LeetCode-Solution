@@ -48,3 +48,21 @@ int* dailyTemperatures(int* T, int TSize, int* returnSize) {
     *returnSize = TSize;
     return arr;
 }
+
+// java 18ms 47M 使用单调递减栈，类似柱状图最大矩形简化版
+class Solution {
+    public int[] dailyTemperatures(int[] T) {
+        if(T.length<=1) return new int[]{0};
+        int []res = new int[T.length];
+        List<Integer> stack = new LinkedList();
+        stack.add(0);
+        for(int i = 0;i < T.length; i++){
+            while(stack.size()>0 && T[stack.get(stack.size()-1)]<T[i]){
+                int c = stack.remove(stack.size()-1);
+                res[c] = i-c;
+            }
+            stack.add(i);
+        }
+        return res;
+    }       
+}
