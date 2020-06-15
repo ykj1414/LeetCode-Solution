@@ -1,0 +1,44 @@
+//104ms 18m python
+class Solution(object):
+
+    def expand(self,s,left,right):
+        # print(left,right,s)
+        while left>=0 and right<len(s) and s[left]==s[right]:
+            left-=1
+            right+=1
+        return (right-left-2)//2
+
+
+    def shortestPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        if not s:
+            return s
+        s = '#'+'#'.join(list(s))+'#'
+        right = -1
+        j = -1
+        arm_len = [0]*len(s)
+        res_c = -1
+        for i in range(len(s)):
+            if right>=i:
+                i_sym = 2*j-i
+                cur_arm_len = min(arm_len[i_sym],right-i)
+                if i==right or cur_arm_len>=right-i:
+                    cur_arm_len = self.expand(s,i-cur_arm_len,i+cur_arm_len)
+            else:
+                cur_arm_len = self.expand(s,i,i)
+            arm_len[i] = cur_arm_len
+            if i+arm_len[i]>right:
+                j = i
+                right = i+arm_len[i]
+            if j-arm_len[j]==0:
+                res_c = j
+        if res_c==-1:
+            s = s[-1::-1]+s
+        else:
+            s = s[:res_c+arm_len[res_c]:-1]+s
+        # print(s)
+        return s[1:len(s):2]
+
