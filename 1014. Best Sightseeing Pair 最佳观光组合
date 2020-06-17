@@ -1,0 +1,12 @@
+//2ms 48M java
+class Solution {
+    public int maxScoreSightseeingPair(int[] A) {
+        int max_score = A[0];
+        int res = 0;
+        for(int i = 1;i<A.length; i++){
+            res = Math.max(A[i]-i+max_score,res);
+            max_score = Math.max(A[i]+i,max_score);
+        }
+        return res;
+    }
+}
