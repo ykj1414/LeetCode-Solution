@@ -1,0 +1,47 @@
+//python  88ms 13M
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution(object):
+    def recoverFromPreorder(self, S):
+        """
+        :type S: str
+        :rtype: TreeNode
+        """
+        if not S:
+            return None
+        stack = []
+        treeNodes = []
+        i = 0
+        val = 0
+        depth = 0
+        while i<len(S):
+            while S[i]=='-':
+                depth+=1
+                i+=1
+            while i<len(S) and S[i]!='-':
+                val=val*10+int(S[i])
+                i+=1
+            if stack:
+                if stack[-1]<depth:
+                    stack.append(depth)
+                    treeNodes[-1].left = TreeNode(val)
+                    treeNodes.append(treeNodes[-1].left)
+                else:
+                    while stack[-1]>=depth:
+                        stack.pop()
+                        treeNodes.pop()
+                    stack.append(depth)
+                    treeNodes[-1].right = TreeNode(val)
+                    treeNodes.append(treeNodes[-1].right)
+            else:
+                stack.append(depth)
+                treeNodes.append(TreeNode(val))
+            # print(stack)
+            val = 0
+            depth = 0
+        return treeNodes[0]
