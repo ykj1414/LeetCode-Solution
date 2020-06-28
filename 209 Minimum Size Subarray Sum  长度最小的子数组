@@ -1,0 +1,33 @@
+// java 1ms
+class Solution {
+    public int minSubArrayLen(int s, int[] nums) {
+        int res = nums.length+1;
+        int dp[] = new int[res];
+        for(int i = 0;i<nums.length;i++){
+            dp[i+1] = dp[i]+nums[i];
+            if(dp[i+1]>=s){
+                int j = Math.max(0,i+1-res);
+                while (dp[i+1]-dp[j++]>=s)
+                res = Math.min(res,i-j+2);
+            }
+        }
+        return res<nums.length+1?res:0;
+    }
+}
+//python 48ms
+class Solution:
+    def minSubArrayLen(self, s: int, nums: List[int]) -> int:
+        if len(nums)<=1:
+            return 0
+        dp = [0]*(len(nums)+1)
+        res = len(nums)+1
+        for i in range(len(nums)):
+            dp[i+1] = dp[i]+nums[i]
+            if dp[i+1]>=s:
+                j = max(0,i+1-res)
+                while dp[i+1]-dp[j]>=s:
+                    j+=1
+                # print(dp[i+1],j)    
+                res = min(res,i-j+2)
+        # print(dp)
+        return res if res<len(nums)+1 else 0
