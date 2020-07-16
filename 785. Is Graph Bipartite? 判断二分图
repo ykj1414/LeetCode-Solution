@@ -1,0 +1,29 @@
+//204ms 14.1M python
+class Solution:
+    def isBipartite(self, graph: List[List[int]]) -> bool:
+        A = [0]*len(graph)
+        B = [0]*len(graph)
+        mark = [False]*len(graph)
+        def func(s,a,b):
+            mark[s] = True
+            o_a = [i for i in a]
+            o_b = [i for i in b]
+            a[s] = 1
+            for i in graph[s]:
+                if a[i]:
+                    a = o_a
+                    b = o_b
+                    return False
+                b[i] = 1
+                if not mark[i]:
+                    if not func(i,b,a):
+                        a = o_a
+                        b = o_b
+                        return False
+            return True
+        for i in range(len(graph)):
+            if mark[i]:
+                continue
+            if not func(i,A,B) and not func(i,B,A):
+                return False
+        return True
