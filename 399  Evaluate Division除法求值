@@ -1,0 +1,43 @@
+//24ms 13.4M python
+class Solution:
+    def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        graph = {}
+        res = []
+        for i in range(len(equations)):
+            graph[equations[i][0]] = graph.get(equations[i][0],{})
+            graph[equations[i][0]][equations[i][1]] = values[i]
+            graph[equations[i][1]] = graph.get(equations[i][1],{})
+            graph[equations[i][1]][equations[i][0]] = -values[i]
+        # print(graph)
+        for index in range(len(queries)):
+            start = queries[index][0]
+            end = queries[index][1]
+            stack = [[start,1]]
+            marked = {p:False for p in graph}
+            if marked.get(start,1)==1:
+                res.append(-1)
+                continue
+            if start==end:
+                res.append(1)
+                continue
+            marked[start] = True
+            while stack:
+                # print(stack)
+                pair = stack.pop()
+                dic = graph.get(pair[0],{})
+                # print(dic)
+                for i in dic:
+                    if marked[i]:
+                        continue
+                    if i==end:
+                        if dic[i]>0:
+                            res.append(pair[1]*dic[i])
+                        else:
+                            res.append(abs(pair[1]/dic[i]))
+                        break
+                    marked[i] = True
+                    now = abs(pair[1]*(dic[i] if dic[i]>0 else 1/dic[i]))
+                    stack.append([i,now])
+            if len(res)-1<index:
+                res.append(-1.0)
+        return res
